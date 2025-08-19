@@ -5,6 +5,12 @@ require('dotenv').config();
 
 const app = express();
 
+// Add debugging information
+console.log('=== BACKEND SERVER STARTING ===');
+console.log('Environment:', process.env.NODE_ENV || 'development');
+console.log('Port:', process.env.PORT || 5001);
+console.log('MongoDB URI:', process.env.MONGO_URI ? 'Set' : 'Not set');
+
 // Configure CORS to allow requests from the React app and mobile devices
 app.use(cors({
   origin: [
@@ -47,12 +53,13 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
 
 // Example route
 app.get('/', (req, res) => {
-  res.send('API is running...');
+  console.log('Backend API endpoint hit:', req.path);
+  res.send('BACKEND API is running... (This should NOT show on frontend)');
 });
 
 // Test route for debugging
 app.get('/test', (req, res) => {
-  res.json({ message: 'Server is working!', timestamp: new Date().toISOString() });
+  res.json({ message: 'Backend Server is working!', timestamp: new Date().toISOString() });
 });
 
 // Debug route to check if API routes are loaded
@@ -79,5 +86,5 @@ app.get('/api/products-debug', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`=== BACKEND SERVER RUNNING ON PORT ${PORT} ===`);
 });
