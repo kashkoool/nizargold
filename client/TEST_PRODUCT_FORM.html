@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار قسم إضافة المنتج</title>
+    <style>
+        /* متغيرات الألوان للوضع المظلم والفاتح */
+        :root {
+            /* الوضع المظلم (افتراضي) */
+            --bg-primary: #121212;
+            --bg-secondary: #2C2C2C;
+            --matte-black: #121212;
+            --charcoal-gray: #2C2C2C;
+            --slate-gray: #666666;
+            --silver-gray: #B0B0B0;
+            --golden: #D4AF37;
+            --golden-hover: #C9A94F;
+            --white: #FFFFFF;
+            --text-primary: #B0B0B0;
+            --text-secondary: #FFFFFF;
+            --text-muted: #666666;
+            --accent-color: #D4AF37;
+            --accent-hover: #C9A94F;
+            --border-color: rgba(176, 176, 176, 0.3);
+            --shadow-color: rgba(0, 0, 0, 0.4);
+            --shadow-accent: 0 4px 20px rgba(212, 175, 55, 0.3);
+            --shadow-dark: 0 8px 32px rgba(0, 0, 0, 0.4);
+            --accent-gradient: linear-gradient(135deg, #D4AF37 0%, #C9A94F 100%);
+        }
+
+        /* الوضع الفاتح */
+        [data-theme="light"] {
+            /* الخلفيات */
+            --bg-primary: #FFFFFF;
+            --bg-secondary: #F5F5F5;
+            --matte-black: #FFFFFF;
+            --charcoal-gray: #FFFFFF;
+            
+            /* النصوص */
+            --text-primary: #333333;
+            --text-secondary: #121212;
+            --text-muted: #666666;
+            
+            /* الألوان المميزة */
+            --accent-color: #D4AF37;
+            --accent-hover: #C9A94F;
+            
+            /* الحدود والظلال */
+            --border-color: #E0E0E0;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --shadow-accent: 0 4px 20px rgba(212, 175, 55, 0.2);
+            --shadow-dark: 0 8px 32px rgba(0, 0, 0, 0.1);
+            
+            /* التدرجات */
+            --accent-gradient: linear-gradient(135deg, #D4AF37 0%, #C9A94F 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            padding: 2rem;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--accent-color);
+            color: var(--matte-black);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .theme-toggle:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+
+        /* محاكاة قسم إضافة المنتج */
+        .add-product-container {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, var(--golden) 0%, var(--bg-secondary) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 3rem 0;
+            direction: rtl;
+            transition: background 0.7s;
+        }
+
+        .add-product-form {
+            background: var(--charcoal-gray);
+            border-radius: 18px;
+            box-shadow: 0 8px 32px var(--shadow-accent), 0 1.5px 8px var(--shadow-dark);
+            padding: 2.5rem 2.2rem 2rem 2.2rem;
+            min-width: 370px;
+            max-width: 520px;
+            width: 100%;
+            transition: box-shadow 0.3s, background-color 0.3s ease;
+            animation: popIn 0.7s;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.95) translateY(30px); opacity: 0; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        .form-title {
+            color: var(--golden);
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            letter-spacing: 1px;
+            transition: color 0.3s ease;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+            color: var(--text-secondary);
+            transition: color 0.3s ease;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.7rem 0.9rem;
+            border: 1.5px solid var(--golden);
+            border-radius: 7px;
+            font-size: 1rem;
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            outline: none;
+            transition: border 0.2s, box-shadow 0.2s, background-color 0.3s ease, color 0.3s ease;
+            margin-bottom: 0.2rem;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--golden-hover);
+            box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.3);
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        .form-group textarea {
+            min-height: 60px;
+            resize: vertical;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: var(--accent-gradient);
+            color: var(--matte-black);
+            border: none;
+            padding: 1rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-accent);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+        }
+
+        /* محاكاة قسم product-form-container */
+        .product-form-container {
+            background: linear-gradient(145deg, var(--charcoal-gray) 0%, var(--bg-secondary) 100%);
+            border: 2px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: var(--shadow-dark);
+            position: relative;
+            overflow: hidden;
+            min-height: 100vh;
+            transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+            margin-top: 2rem;
+        }
+
+        .product-form-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--accent-gradient);
+            border-radius: 20px 20px 0 0;
+        }
+
+        .product-form-title {
+            color: var(--white);
+            font-size: 2rem;
+            font-weight: 800;
+            text-shadow: 0 2px 8px rgba(212, 175, 55, 0.4);
+            letter-spacing: 1px;
+            margin-bottom: 2rem;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1rem;
+            color: var(--text-secondary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--golden);
+            box-shadow: 
+                0 0 0 3px rgba(212, 175, 55, 0.1),
+                inset 0 2px 4px rgba(0, 0, 0, 0.1);
+            background: var(--charcoal-gray);
+        }
+
+        .form-input::placeholder,
+        .form-textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        .form-button {
+            background: var(--accent-gradient);
+            color: var(--matte-black);
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-accent);
+            margin: 0.5rem;
+        }
+
+        .form-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+        }
+
+        .form-button.cancel {
+            background: transparent;
+            color: var(--accent-color);
+            border: 2px solid var(--accent-color);
+            box-shadow: none;
+        }
+
+        .form-button.cancel:hover {
+            background: var(--accent-color);
+            color: var(--matte-black);
+        }
+
+        /* تحسينات الوضع الفاتح */
+        [data-theme="light"] .add-product-container {
+            background: linear-gradient(135deg, var(--golden) 0%, var(--bg-secondary) 100%);
+        }
+
+        [data-theme="light"] .add-product-form {
+            background: var(--charcoal-gray);
+            box-shadow: 0 8px 32px var(--shadow-accent), 0 1.5px 8px var(--shadow-dark);
+        }
+
+        [data-theme="light"] .form-title {
+            color: var(--golden);
+        }
+
+        [data-theme="light"] .form-group label {
+            color: var(--text-secondary);
+        }
+
+        [data-theme="light"] .form-group input,
+        [data-theme="light"] .form-group select,
+        [data-theme="light"] .form-group textarea {
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            border-color: var(--golden);
+        }
+
+        [data-theme="light"] .form-group input:focus,
+        [data-theme="light"] .form-group select:focus,
+        [data-theme="light"] .form-group textarea:focus {
+            border-color: var(--golden-hover);
+            box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
+        }
+
+        [data-theme="light"] .form-group input::placeholder,
+        [data-theme="light"] .form-group textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        [data-theme="light"] .product-form-container {
+            background: linear-gradient(145deg, var(--charcoal-gray) 0%, var(--bg-secondary) 100%);
+            border-color: var(--border-color);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+        }
+
+        [data-theme="light"] .product-form-title {
+            color: var(--white);
+        }
+
+        [data-theme="light"] .form-input,
+        [data-theme="light"] .form-select,
+        [data-theme="light"] .form-textarea {
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            border-color: var(--border-color);
+        }
+
+        [data-theme="light"] .form-input:focus,
+        [data-theme="light"] .form-select:focus,
+        [data-theme="light"] .form-textarea:focus {
+            border-color: var(--golden);
+            box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
+            background: var(--charcoal-gray);
+        }
+
+        [data-theme="light"] .form-input::placeholder,
+        [data-theme="light"] .form-textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        .color-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .color-item {
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            border: 2px solid var(--border-color);
+        }
+
+        .bg-primary { background: var(--bg-primary); color: var(--text-secondary); }
+        .bg-secondary { background: var(--bg-secondary); color: var(--text-secondary); }
+        .text-primary { background: var(--text-primary); color: var(--bg-primary); }
+        .text-secondary { background: var(--text-secondary); color: var(--bg-primary); }
+        .accent { background: var(--accent-color); color: var(--matte-black); }
+    </style>
+</head>
+<body>
+    <button class="theme-toggle" onclick="toggleTheme()">تبديل الوضع</button>
+    
+    <div class="add-product-container">
+        <div class="add-product-form">
+            <h2 class="form-title">إضافة منتج جديد</h2>
+            
+            <div class="form-group">
+                <label>اسم المنتج:</label>
+                <input type="text" placeholder="أدخل اسم المنتج">
+            </div>
+            
+            <div class="form-group">
+                <label>وصف المنتج:</label>
+                <textarea placeholder="أدخل وصف المنتج" rows="4"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>نوع المنتج:</label>
+                <select>
+                    <option>اختر النوع</option>
+                    <option>ذهب</option>
+                    <option>فضة</option>
+                    <option>ألماس</option>
+                </select>
+            </div>
+            
+            <button class="submit-btn">حفظ المنتج</button>
+        </div>
+    </div>
+
+    <div class="product-form-container">
+        <h2 class="product-form-title">نموذج المنتج التفصيلي</h2>
+        
+        <div class="color-info">
+            <div class="color-item bg-primary">الخلفية الأساسية</div>
+            <div class="color-item bg-secondary">الخلفية الثانوية</div>
+            <div class="color-item text-primary">النص الأساسي</div>
+            <div class="color-item text-secondary">النص الثانوي</div>
+            <div class="color-item accent">اللون المميز</div>
+        </div>
+        
+        <div class="form-group">
+            <label>اسم المنتج:</label>
+            <input type="text" class="form-input" placeholder="أدخل اسم المنتج">
+        </div>
+        
+        <div class="form-group">
+            <label>وصف المنتج:</label>
+            <textarea class="form-textarea" placeholder="أدخل وصف المنتج" rows="4"></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label>نوع المنتج:</label>
+            <select class="form-select">
+                <option>اختر النوع</option>
+                <option>ذهب</option>
+                <option>فضة</option>
+                <option>ألماس</option>
+            </select>
+        </div>
+        
+        <div style="text-align: center; margin-top: 2rem;">
+            <button class="form-button">حفظ المنتج</button>
+            <button class="form-button cancel">إلغاء</button>
+        </div>
+    </div>
+
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            // تحديث نص الزر
+            const button = document.querySelector('.theme-toggle');
+            button.textContent = newTheme === 'light' ? 'الوضع المظلم' : 'الوضع الفاتح';
+        }
+
+        // تحميل الوضع المحفوظ
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+                const button = document.querySelector('.theme-toggle');
+                button.textContent = savedTheme === 'light' ? 'الوضع المظلم' : 'الوضع الفاتح';
+            }
+        });
+    </script>
+</body>
+</html>

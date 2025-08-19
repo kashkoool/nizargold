@@ -1,0 +1,1766 @@
+/* متغيرات الألوان الأساسية */
+:root {
+  --bg-primary: #0a0a0a;
+  --bg-secondary: #1a1a1a;
+  --matte-black: #121212;
+  --charcoal-gray: #2a2a2a;
+  --silver-gray: #3a3a3a;
+  --white: #ffffff;
+  --text-primary: #ffffff;
+  --text-secondary: #e0e0e0;
+  --text-muted: #a0a0a0;
+  --accent-color: #D4AF37;
+  --accent-hover: #C9A94F;
+  --border-color: #333333;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  --card-bg: #1e1e1e;
+  --golden: #D4AF37;
+  --golden-hover: #C9A94F;
+  --shadow-accent: 0 4px 20px rgba(212, 175, 55, 0.2);
+  --shadow-dark: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --golden-gradient: linear-gradient(135deg, #D4AF37 0%, #C9A94F 100%);
+  --light-gradient: linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 100%);
+}
+
+/* متغيرات الألوان للوضع الفاتح */
+[data-theme="light"] {
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F5F5F5;
+  --matte-black: #FFFFFF;
+  --charcoal-gray: #F5F5F5;
+  --silver-gray: #E0E0E0;
+  --white: #FFFFFF;
+  --text-primary: #121212;
+  --text-secondary: #333333;
+  --text-muted: #666666;
+  --accent-color: #D4AF37;
+  --accent-hover: #C9A94F;
+  --border-color: #E0E0E0;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --card-bg: #FFFFFF;
+  --golden: #D4AF37;
+  --golden-hover: #C9A94F;
+  --shadow-accent: 0 4px 20px rgba(212, 175, 55, 0.15);
+  --shadow-dark: 0 8px 32px rgba(0, 0, 0, 0.1);
+  --golden-gradient: linear-gradient(135deg, #D4AF37 0%, #C9A94F 100%);
+  --light-gradient: linear-gradient(180deg, #FFFFFF 0%, #F5F5F5 100%);
+}
+
+/* تحسينات إضافية للوضع الفاتح */
+[data-theme="light"] .favorites-container {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+[data-theme="light"] .favorites-header {
+  background: var(--white);
+  border-bottom-color: var(--golden);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .favorites-header::before {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.05) 0%, transparent 100%);
+}
+
+[data-theme="light"] .favorites-title {
+  color: var(--text-primary);
+}
+
+[data-theme="light"] .favorites-subtitle {
+  color: var(--text-secondary);
+}
+
+[data-theme="light"] .quick-actions {
+  background: var(--white);
+  border-color: var(--border-color);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .quick-actions-title {
+  color: var(--text-primary);
+}
+
+[data-theme="light"] .favorite-card {
+  background: var(--white);
+  border-color: var(--border-color);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .favorite-card:hover {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="light"] .favorite-card-title {
+  color: var(--text-primary);
+}
+
+[data-theme="light"] .favorite-card-details {
+  color: var(--text-secondary);
+}
+
+[data-theme="light"] .favorite-card-price {
+  color: var(--text-primary);
+}
+
+[data-theme="light"] .empty-favorites {
+  background: var(--white);
+  border-color: var(--border-color);
+  color: var(--text-secondary);
+}
+
+[data-theme="light"] .loading-favorites {
+  background: var(--white);
+  color: var(--text-primary);
+}
+
+/* الحاوية الرئيسية لصفحة المفضلة */
+.favorites-container {
+  min-height: 100vh;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+}
+
+/* تحسينات للانتقالات السلسة */
+.favorites-container * {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* رأس الصفحة */
+.favorites-header {
+  background: var(--matte-black);
+  border-bottom: 2px solid var(--golden);
+  box-shadow: var(--shadow-dark);
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.favorites-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+[data-theme="light"] .favorites-header {
+  background: var(--white);
+  border-bottom-color: var(--golden);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+/* زر تبديل الوضع في صفحة الإعجابات */
+.favorites-theme-toggle-button {
+  background: var(--golden-gradient);
+  border: 2px solid var(--golden);
+  color: var(--white);
+  padding: 0.75rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-accent);
+  position: relative;
+  overflow: hidden;
+}
+
+.favorites-theme-toggle-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.favorites-theme-toggle-button:hover::before {
+  left: 100%;
+}
+
+.favorites-theme-toggle-button:hover {
+  background: var(--golden-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+}
+
+.favorites-theme-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  transition: transform 0.3s ease;
+}
+
+.favorites-theme-toggle-button:hover .favorites-theme-icon {
+  transform: rotate(180deg) scale(1.1);
+}
+
+[data-theme="light"] .favorites-theme-toggle-button {
+  background: var(--golden-gradient);
+  border-color: var(--golden);
+  color: var(--white);
+  box-shadow: 0 4px 20px rgba(212, 175, 55, 0.2);
+}
+
+[data-theme="light"] .favorites-theme-toggle-button:hover {
+  background: var(--golden-hover);
+  box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--golden-gradient);
+  color: var(--white);
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  box-shadow: var(--shadow-accent);
+}
+
+.back-button:hover {
+  background: var(--golden-hover);
+  transform: translateX(-5px);
+  box-shadow: 0 6px 25px rgba(212, 175, 55, 0.3);
+}
+
+.back-icon {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+.header-main {
+  text-align: center;
+  flex: 1;
+  margin: 0 2rem;
+}
+
+.title-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.title-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  color: var(--golden);
+  filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.5));
+}
+
+.favorites-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: var(--golden);
+  margin: 0;
+  text-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+}
+
+.favorites-subtitle {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  margin: 0;
+  opacity: 0.8;
+}
+
+/* المحتوى الرئيسي */
+.favorites-main-content {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* رسالة المفضلة الفارغة */
+.empty-favorites {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: var(--card-bg);
+  border: 2px dashed var(--border-color);
+  border-radius: 20px;
+  margin: 2rem 0;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.empty-favorites::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 30%, rgba(212, 175, 55, 0.05) 50%, transparent 70%);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+[data-theme="light"] .empty-favorites {
+  background: var(--white);
+  border-color: var(--border-color);
+}
+
+.empty-favorites-icon {
+  font-size: 4rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.1); opacity: 1; }
+}
+
+.empty-favorites-title {
+  font-size: 1.8rem;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.empty-favorites-text {
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+  line-height: 1.6;
+  font-size: 1.1rem;
+}
+
+/* زر العودة للمتجر */
+.back-to-shop-btn {
+  background: var(--golden-gradient);
+  color: var(--white);
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+  box-shadow: var(--shadow-accent);
+  margin-bottom: 1rem;
+}
+
+.back-to-shop-btn:hover {
+  background: var(--golden-hover);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(212, 175, 55, 0.3);
+}
+
+.tip-text {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+/* شبكة المنتجات المفضلة */
+.favorites-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1.5rem;
+  margin-top: 2rem;
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* بطاقة المنتج المفضل */
+.favorite-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-dark);
+  position: relative;
+}
+
+.favorite-card:hover {
+  transform: translateY(-10px);
+  box-shadow: var(--shadow-accent);
+  border-color: var(--golden);
+}
+
+[data-theme="light"] .favorite-card {
+  background: var(--white);
+  border-color: var(--border-color);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .favorite-card:hover {
+  box-shadow: 0 8px 32px rgba(212, 175, 55, 0.2);
+}
+
+/* زر إزالة من المفضلة */
+.remove-favorite-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(255, 255, 255, 0.95);
+  color: #ff4757;
+  border: none;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.remove-favorite-btn:hover {
+  background: #ff4757;
+  color: var(--white);
+  transform: scale(1.1) rotate(180deg);
+  box-shadow: 0 6px 20px rgba(255, 71, 87, 0.4);
+}
+
+.remove-icon {
+  width: 1.3rem;
+  height: 1.3rem;
+  transition: all 0.3s ease;
+}
+
+[data-theme="light"] .remove-favorite-btn {
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* حاوية الصورة */
+.image-container {
+  position: relative;
+  height: 280px;
+  overflow: hidden;
+}
+
+/* صورة المنتج */
+.favorite-product-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: all 0.5s ease;
+  cursor: pointer;
+}
+
+.favorite-card:hover .favorite-product-image {
+  transform: scale(1.1);
+}
+
+.no-image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-secondary);
+  color: var(--text-muted);
+  gap: 0.5rem;
+}
+
+.placeholder-icon {
+  width: 2rem;
+  height: 2rem;
+}
+
+/* نقاط التنقل بين الصور */
+.image-dots {
+  position: absolute;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.5rem;
+  z-index: 5;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.dot.active {
+  background: var(--golden);
+  transform: scale(1.2);
+}
+
+/* معلومات المنتج */
+.favorite-product-info {
+  padding: 1.5rem;
+}
+
+.favorite-product-title {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: var(--text-primary);
+  margin-bottom: 0.75rem;
+  transition: all 0.3s ease;
+  line-height: 1.4;
+}
+
+.favorite-product-description {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+  transition: all 0.3s ease;
+}
+
+/* قسم السعر */
+.price-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.favorite-product-price {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--golden);
+  text-shadow: 0 2px 4px rgba(212, 175, 55, 0.2);
+}
+
+.price-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* الأزرار */
+.favorite-product-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.favorite-btn-primary {
+  background: var(--golden-gradient);
+  color: var(--white);
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  box-shadow: var(--shadow-accent);
+}
+
+.favorite-btn-primary:hover {
+  background: var(--golden-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(212, 175, 55, 0.3);
+}
+
+.favorite-btn-secondary {
+  background: transparent;
+  color: var(--golden);
+  border: 2px solid var(--golden);
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.favorite-btn-secondary:hover {
+  background: var(--golden);
+  color: var(--white);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(212, 175, 55, 0.3);
+}
+
+.btn-icon {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+/* قسم الإجراءات السريعة */
+.quick-actions {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow-dark);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.quick-actions::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--golden-gradient);
+}
+
+[data-theme="light"] .quick-actions {
+  background: var(--white);
+  border-color: var(--border-color);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.quick-actions-title {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: var(--text-primary);
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.quick-actions-title::before {
+  content: '⚡';
+  font-size: 1.2rem;
+}
+
+.quick-actions-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.clear-all-btn {
+  background: transparent;
+  color: #ff4757;
+  border: 2px solid #ff4757;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 140px;
+  justify-content: center;
+}
+
+.clear-all-btn:hover {
+  background: #ff4757;
+  color: var(--white);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 71, 87, 0.3);
+}
+
+.share-favorites-btn {
+  background: var(--golden-gradient);
+  color: var(--white);
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: var(--shadow-accent);
+  min-width: 140px;
+  justify-content: center;
+}
+
+.share-favorites-btn:hover {
+  background: var(--golden-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(212, 175, 55, 0.3);
+}
+
+.browse-more-btn {
+  background: var(--light-gradient);
+  color: var(--text-primary);
+  border: 2px solid var(--border-color);
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 140px;
+  justify-content: center;
+}
+
+.browse-more-btn:hover {
+  border-color: var(--golden);
+  color: var(--golden);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(212, 175, 55, 0.2);
+}
+
+/* رسائل التحميل */
+.loading-favorites {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+}
+
+.loading-spinner {
+  width: 3rem;
+  height: 3rem;
+  border: 3px solid var(--border-color);
+  border-top: 3px solid var(--golden);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* النوافذ المنبثقة */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+  backdrop-filter: blur(5px);
+}
+
+/* نافذة التعليقات */
+.comment-modal {
+  background: var(--card-bg);
+  border-radius: 20px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 80vh;
+  overflow: hidden;
+  box-shadow: var(--shadow-dark);
+  border: 1px solid var(--border-color);
+}
+
+.modal-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-title {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.close-modal-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.close-modal-btn:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.modal-subtitle {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin: 0;
+  padding: 0 1.5rem 1rem;
+}
+
+.modal-content {
+  padding: 1.5rem;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+/* قسم التعليقات */
+.comments-section {
+  min-height: 200px;
+}
+
+.loading-comments {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-secondary);
+}
+
+.comments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.comment-item {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  padding: 1rem;
+  border: 1px solid var(--border-color);
+}
+
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.comment-author {
+  font-weight: 600;
+  color: var(--golden);
+  font-size: 0.9rem;
+}
+
+.comment-date {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.comment-content {
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.no-comments {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-muted);
+}
+
+.no-comments-icon {
+  width: 3rem;
+  height: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+/* نموذج التعليق */
+.comment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.comment-textarea {
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 1rem;
+  resize: vertical;
+  min-height: 100px;
+  transition: all 0.3s ease;
+}
+
+.comment-textarea:focus {
+  outline: none;
+  border-color: var(--golden);
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.submit-comment-btn {
+  background: var(--golden-gradient);
+  color: var(--white);
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex: 1;
+}
+
+.submit-comment-btn:hover {
+  background: var(--golden-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-accent);
+}
+
+.cancel-comment-btn {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex: 1;
+}
+
+.cancel-comment-btn:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  transform: translateY(-2px);
+}
+
+/* نافذة التأكيد */
+.confirm-modal {
+  background: var(--card-bg);
+  border-radius: 20px;
+  padding: 2rem;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  box-shadow: var(--shadow-dark);
+  border: 1px solid var(--border-color);
+}
+
+.confirm-icon {
+  width: 4rem;
+  height: 4rem;
+  margin: 0 auto 1rem;
+  background: rgba(255, 71, 87, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.confirm-heart-icon {
+  width: 2rem;
+  height: 2rem;
+  color: #ff4757;
+}
+
+.confirm-trash-icon {
+  width: 2rem;
+  height: 2rem;
+  color: #ff4757;
+}
+
+.confirm-title {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+.confirm-message {
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 2rem;
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.confirm-btn {
+  flex: 1;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.confirm-remove {
+  background: #ff4757;
+  color: var(--white);
+}
+
+.confirm-remove:hover {
+  background: #e63946;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 71, 87, 0.3);
+}
+
+.confirm-cancel {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.confirm-cancel:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  transform: translateY(-2px);
+}
+
+/* التصميم المتجاوب */
+@media (max-width: 1200px) {
+  .favorites-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.2rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  .header-content {
+    flex-direction: column;
+    gap: 1.5rem;
+    text-align: center;
+  }
+  
+  .header-main {
+    margin: 0;
+  }
+  
+  .favorites-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .favorites-main-content {
+    padding: 1rem;
+  }
+  
+  .favorites-header {
+    padding: 1.5rem 1rem;
+  }
+  
+  .favorites-title {
+    font-size: 2rem;
+  }
+  
+  .favorites-subtitle {
+    font-size: 1rem;
+  }
+  
+  .favorites-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  
+  .quick-actions-buttons {
+    flex-direction: row;
+    gap: 0.75rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  
+  .clear-all-btn,
+  .share-favorites-btn,
+  .browse-more-btn {
+    min-width: 110px;
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+  }
+  
+  .favorite-product-actions {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .modal-content {
+    padding: 1rem;
+  }
+  
+  .confirm-actions {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  /* تحسينات إضافية للجوال */
+  .back-button {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+  }
+  
+  .back-icon {
+    width: 1rem;
+    height: 1rem;
+  }
+  
+  .title-icon {
+    width: 2rem;
+    height: 2rem;
+  }
+  
+  .quick-actions {
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .quick-actions-title {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+  }
+  
+  .clear-all-btn,
+  .share-favorites-btn,
+  .browse-more-btn {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+  }
+  
+  .favorite-card {
+    border-radius: 16px;
+  }
+  
+  .image-container {
+    height: 240px;
+  }
+  
+  .favorite-product-info {
+    padding: 1.2rem;
+  }
+  
+  .favorite-product-title {
+    font-size: 1.2rem;
+    margin-bottom: 0.6rem;
+  }
+  
+  .favorite-product-description {
+    font-size: 0.9rem;
+    margin-bottom: 0.8rem;
+  }
+  
+  .favorite-product-price {
+    font-size: 1.3rem;
+  }
+  
+  .price-label {
+    font-size: 0.75rem;
+  }
+  
+  .favorite-btn-primary,
+  .favorite-btn-secondary {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+  }
+  
+  .btn-icon {
+    width: 1rem;
+    height: 1rem;
+  }
+  
+  .remove-favorite-btn {
+    width: 40px;
+    height: 40px;
+    top: 0.8rem;
+    right: 0.8rem;
+  }
+  
+  .remove-icon {
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+  
+  .empty-favorites {
+    padding: 2.5rem 1.5rem;
+    margin: 1.5rem 0;
+  }
+  
+  .empty-favorites-icon {
+    font-size: 3.5rem;
+  }
+  
+  .empty-favorites-title {
+    font-size: 1.6rem;
+  }
+  
+  .empty-favorites-text {
+    font-size: 1rem;
+  }
+  
+  .back-to-shop-btn {
+    padding: 0.8rem 1.8rem;
+    font-size: 1rem;
+  }
+  
+  .tip-text {
+    font-size: 0.85rem;
+  }
+  
+  /* تحسين النوافذ المنبثقة للجوال */
+  .modal-overlay {
+    padding: 0.5rem;
+  }
+  
+  .comment-modal {
+    max-height: 90vh;
+    border-radius: 16px;
+  }
+  
+  .modal-header {
+    padding: 1.2rem;
+  }
+  
+  .modal-title {
+    font-size: 1.2rem;
+  }
+  
+  .modal-subtitle {
+    padding: 0 1.2rem 0.8rem;
+    font-size: 0.85rem;
+  }
+  
+  .modal-content {
+    padding: 1.2rem;
+    max-height: 70vh;
+  }
+  
+  .comment-item {
+    padding: 0.8rem;
+  }
+  
+  .comment-author {
+    font-size: 0.85rem;
+  }
+  
+  .comment-date {
+    font-size: 0.75rem;
+  }
+  
+  .comment-content {
+    font-size: 0.9rem;
+  }
+  
+  .comment-textarea {
+    padding: 0.8rem;
+    min-height: 80px;
+    font-size: 0.9rem;
+  }
+  
+  .submit-comment-btn,
+  .cancel-comment-btn {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+  }
+  
+  .confirm-modal {
+    padding: 1.5rem;
+    border-radius: 16px;
+  }
+  
+  .confirm-icon {
+    width: 3rem;
+    height: 3rem;
+  }
+  
+  .confirm-heart-icon,
+  .confirm-trash-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+  
+  .confirm-title {
+    font-size: 1.2rem;
+  }
+  
+  .confirm-message {
+    font-size: 0.9rem;
+  }
+  
+  .confirm-btn {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .favorites-header {
+    padding: 1rem 0.8rem;
+  }
+  
+  .favorites-title {
+    font-size: 1.8rem;
+  }
+  
+  .favorites-subtitle {
+    font-size: 0.9rem;
+  }
+  
+  .favorites-main-content {
+    padding: 0.8rem;
+  }
+  
+  .favorites-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .empty-favorites {
+    padding: 2rem 1rem;
+  }
+  
+  .empty-favorites-icon {
+    font-size: 3rem;
+  }
+  
+  .empty-favorites-title {
+    font-size: 1.4rem;
+  }
+  
+  .empty-favorites-text {
+    font-size: 0.9rem;
+  }
+  
+  .favorite-card {
+    border-radius: 12px;
+  }
+  
+  .image-container {
+    height: 200px;
+  }
+  
+  .favorite-product-info {
+    padding: 1rem;
+  }
+  
+  .favorite-product-title {
+    font-size: 1.1rem;
+  }
+  
+  .favorite-product-description {
+    font-size: 0.85rem;
+  }
+  
+  .favorite-product-price {
+    font-size: 1.2rem;
+  }
+  
+  .price-label {
+    font-size: 0.7rem;
+  }
+  
+  .favorite-btn-primary,
+  .favorite-btn-secondary {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.85rem;
+  }
+  
+  .btn-icon {
+    width: 0.9rem;
+    height: 0.9rem;
+  }
+  
+  .remove-favorite-btn {
+    width: 35px;
+    height: 35px;
+    top: 0.6rem;
+    right: 0.6rem;
+  }
+  
+  .remove-icon {
+    width: 1rem;
+    height: 1rem;
+  }
+  
+  .quick-actions {
+    padding: 1.2rem;
+    margin-bottom: 1.2rem;
+  }
+  
+  .quick-actions-title {
+    font-size: 1.1rem;
+    margin-bottom: 0.8rem;
+  }
+  
+  .quick-actions-buttons {
+    flex-direction: row;
+    gap: 0.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  
+  .clear-all-btn,
+  .share-favorites-btn,
+  .browse-more-btn {
+    min-width: 100px;
+    padding: 0.5rem 0.8rem;
+    font-size: 0.8rem;
+  }
+  
+  .back-button {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+  }
+  
+  .back-icon {
+    width: 0.9rem;
+    height: 0.9rem;
+  }
+  
+  .title-icon {
+    width: 1.8rem;
+    height: 1.8rem;
+  }
+  
+  /* تحسين النوافذ المنبثقة للشاشات الصغيرة جداً */
+  .modal-overlay {
+    padding: 0.3rem;
+  }
+  
+  .comment-modal {
+    max-height: 95vh;
+    border-radius: 12px;
+  }
+  
+  .modal-header {
+    padding: 1rem;
+  }
+  
+  .modal-title {
+    font-size: 1.1rem;
+  }
+  
+  .modal-subtitle {
+    padding: 0 1rem 0.6rem;
+    font-size: 0.8rem;
+  }
+  
+  .modal-content {
+    padding: 1rem;
+    max-height: 75vh;
+  }
+  
+  .comment-item {
+    padding: 0.6rem;
+  }
+  
+  .comment-author {
+    font-size: 0.8rem;
+  }
+  
+  .comment-date {
+    font-size: 0.7rem;
+  }
+  
+  .comment-content {
+    font-size: 0.85rem;
+  }
+  
+  .comment-textarea {
+    padding: 0.6rem;
+    min-height: 70px;
+    font-size: 0.85rem;
+  }
+  
+  .submit-comment-btn,
+  .cancel-comment-btn {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.85rem;
+  }
+  
+  .confirm-modal {
+    padding: 1.2rem;
+    border-radius: 12px;
+  }
+  
+  .confirm-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+  
+  .confirm-heart-icon,
+  .confirm-trash-icon {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+  
+  .confirm-title {
+    font-size: 1.1rem;
+  }
+  
+  .confirm-message {
+    font-size: 0.85rem;
+  }
+  
+  .confirm-btn {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.85rem;
+  }
+  
+  /* تحسين شريط التمرير للشاشات الصغيرة */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+  }
+}
+
+/* تحسينات إضافية للشاشات المتوسطة */
+@media (min-width: 481px) and (max-width: 768px) {
+  .favorites-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.2rem;
+  }
+  
+  .header-content {
+    gap: 1.2rem;
+  }
+  
+  .header-stats {
+    flex-direction: row;
+    gap: 0.8rem;
+  }
+  
+  .quick-actions-buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 0.8rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  
+  .clear-all-btn,
+  .share-favorites-btn,
+  .browse-more-btn {
+    min-width: 120px;
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* تحسينات للشاشات الكبيرة جداً */
+@media (min-width: 1200px) {
+  .favorites-main-content {
+    max-width: 1400px;
+  }
+  
+  .header-content {
+    max-width: 1400px;
+  }
+  
+  .favorites-grid {
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 2.5rem;
+  }
+  
+  .favorite-card:hover {
+    transform: translateY(-12px);
+  }
+}
+
+/* تحسينات للوضع الأفقي على الجوال */
+@media (max-width: 768px) and (orientation: landscape) {
+  .favorites-header {
+    padding: 1rem;
+  }
+  
+  .header-content {
+    flex-direction: row;
+    gap: 1rem;
+  }
+  
+  .header-main {
+    margin: 0 1rem;
+  }
+  
+  .favorites-title {
+    font-size: 1.6rem;
+  }
+  
+  .favorites-subtitle {
+    font-size: 0.9rem;
+  }
+  
+  .header-stats {
+    flex-direction: row;
+    gap: 0.8rem;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .favorites-count {
+    padding: 0.4rem 1rem;
+    font-size: 0.9rem;
+    height: 36px;
+  }
+  
+  .membership-badge {
+    padding: 0.4rem 1rem;
+    font-size: 0.9rem;
+    height: 36px;
+  }
+  
+  .image-container {
+    height: 180px;
+  }
+  
+  .favorite-product-info {
+    padding: 0.8rem;
+  }
+  
+  .favorite-product-title {
+    font-size: 1rem;
+    margin-bottom: 0.4rem;
+  }
+  
+  .favorite-product-description {
+    font-size: 0.8rem;
+    margin-bottom: 0.6rem;
+  }
+  
+  .favorite-product-price {
+    font-size: 1.1rem;
+  }
+  
+  .favorite-btn-primary,
+  .favorite-btn-secondary {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+  }
+}
+
+/* تحسينات للشاشات عالية الدقة */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .favorite-product-image {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+  
+  .title-icon,
+  .back-icon,
+  .btn-icon {
+    image-rendering: -webkit-optimize-contrast;
+  }
+}
+
+/* تحسينات للأداء على الأجهزة الضعيفة */
+@media (prefers-reduced-motion: reduce) {
+  .favorite-card,
+  .back-button,
+  .favorite-btn-primary,
+  .favorite-btn-secondary,
+  .clear-all-btn,
+  .share-favorites-btn,
+  .browse-more-btn,
+  .remove-favorite-btn,
+  .favorite-product-image,
+  .empty-favorites-icon {
+    transition: none;
+  }
+  
+  .favorite-card:hover {
+    transform: none;
+  }
+  
+  .back-button:hover {
+    transform: none;
+  }
+  
+  .favorite-btn-primary:hover,
+  .favorite-btn-secondary:hover,
+  .clear-all-btn:hover,
+  .share-favorites-btn:hover,
+  .browse-more-btn:hover {
+    transform: none;
+  }
+  
+  .remove-favorite-btn:hover {
+    transform: none;
+  }
+  
+  .favorite-product-image:hover {
+    transform: none;
+  }
+  
+  .empty-favorites-icon {
+    animation: none;
+  }
+  
+  @keyframes shimmer {
+    0%, 100% { transform: translateX(-100%); }
+  }
+  
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.7; }
+  }
+}
+
+/* تأثيرات إضافية */
+.favorite-glow {
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+}
+
+.favorite-gold-text {
+  color: var(--golden);
+  text-shadow: 0 2px 4px rgba(212, 175, 55, 0.2);
+}
+
+/* شريط التمرير */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--golden);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--golden-hover);
+}
+

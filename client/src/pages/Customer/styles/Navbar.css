@@ -1,0 +1,371 @@
+/* متغيرات الألوان الأساسية */
+:root {
+  --bg-primary: #0a0a0a;
+  --bg-secondary: #1a1a1a;
+  --matte-black: #121212;
+  --charcoal-gray: #2a2a2a;
+  --silver-gray: #3a3a3a;
+  --white: #ffffff;
+  --text-primary: #ffffff;
+  --text-secondary: #e0e0e0;
+  --text-muted: #a0a0a0;
+  --accent-color: #D4AF37;
+  --accent-hover: #C9A94F;
+  --border-color: #333333;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  --card-bg: #1e1e1e;
+  --golden: #D4AF37;
+  --golden-hover: #C9A94F;
+  --shadow-accent: 0 4px 20px rgba(212, 175, 55, 0.2);
+  --shadow-dark: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --golden-gradient: linear-gradient(135deg, #D4AF37 0%, #C9A94F 100%);
+  --light-gradient: linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 100%);
+}
+
+/* متغيرات الألوان للوضع الفاتح */
+[data-theme="light"] {
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F5F5F5;
+  --matte-black: #FFFFFF;
+  --charcoal-gray: #F5F5F5;
+  --silver-gray: #E0E0E0;
+  --white: #FFFFFF;
+  --text-primary: #121212;
+  --text-secondary: #333333;
+  --text-muted: #666666;
+  --accent-color: #D4AF37;
+  --accent-hover: #C9A94F;
+  --border-color: #E0E0E0;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --card-bg: #FFFFFF;
+  --golden: #D4AF37;
+  --golden-hover: #C9A94F;
+  --shadow-accent: 0 4px 20px rgba(212, 175, 55, 0.15);
+  --shadow-dark: 0 8px 32px rgba(0, 0, 0, 0.1);
+  --golden-gradient: linear-gradient(135deg, #D4AF37 0%, #C9A94F 100%);
+  --light-gradient: linear-gradient(180deg, #FFFFFF 0%, #F5F5F5 100%);
+}
+
+/* النافبار الرئيسي للزبون */
+.customer-navbar {
+  background: var(--matte-black);
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: var(--shadow-dark);
+  padding: 1rem 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+[data-theme="light"] .customer-navbar {
+  background: var(--white);
+  border-bottom-color: var(--border-color);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* تخطيط النافبار */
+.customer-navbar-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* العلامة التجارية */
+.customer-brand {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: var(--golden);
+  text-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.customer-brand:hover {
+  color: var(--golden-hover);
+  text-shadow: 0 2px 12px rgba(212, 175, 55, 0.4);
+}
+
+/* قائمة التنقل */
+.customer-nav-links {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+
+.customer-nav-link {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.customer-nav-link:hover {
+  color: var(--golden);
+  background: rgba(212, 175, 55, 0.1);
+}
+
+[data-theme="light"] .customer-nav-link {
+  color: var(--text-secondary);
+}
+
+[data-theme="light"] .customer-nav-link:hover {
+  color: var(--golden);
+  background: rgba(212, 175, 55, 0.1);
+}
+
+/* الرابط النشط */
+.customer-nav-link.active {
+  color: var(--golden);
+  background: rgba(212, 175, 55, 0.15);
+  font-weight: 600;
+}
+
+/* قسم الإجراءات */
+.customer-nav-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+/* زر تبديل المود */
+.customer-theme-toggle-button {
+  background: var(--golden-gradient);
+  color: var(--white);
+  border: none;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.customer-theme-toggle-button:hover {
+  background: var(--golden-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-accent);
+}
+
+/* أيقونة زر التبديل */
+.customer-theme-icon {
+  width: 18px;
+  height: 18px;
+}
+
+/* زر المفضلة */
+.customer-favorites-btn {
+  background: transparent;
+  color: var(--golden);
+  border: 2px solid var(--golden);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.customer-favorites-btn:hover {
+  background: var(--golden);
+  color: var(--white);
+  transform: translateY(-2px);
+}
+
+/* عداد المفضلة */
+.customer-favorites-count {
+  background: var(--golden);
+  color: var(--white);
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: bold;
+  margin-left: 0.5rem;
+}
+
+/* زر تسجيل الخروج */
+.customer-logout-btn {
+  background: transparent;
+  color: #ff4757;
+  border: 2px solid #ff4757;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.customer-logout-btn:hover {
+  background: #ff4757;
+  color: var(--white);
+  transform: translateY(-2px);
+}
+
+/* قائمة منسدلة للموبايل */
+.customer-mobile-menu {
+  display: none;
+  flex-direction: column;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--matte-black);
+  border-top: 1px solid var(--border-color);
+  box-shadow: var(--shadow-dark);
+  padding: 1rem;
+  z-index: 999;
+}
+
+[data-theme="light"] .customer-mobile-menu {
+  background: var(--white);
+  border-top-color: var(--border-color);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.customer-mobile-menu.active {
+  display: flex;
+}
+
+.customer-mobile-nav-link {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-weight: 500;
+  padding: 1rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.customer-mobile-nav-link:hover {
+  color: var(--golden);
+  background: rgba(212, 175, 55, 0.1);
+}
+
+.customer-mobile-nav-link:last-child {
+  border-bottom: none;
+}
+
+/* زر القائمة للموبايل */
+.customer-mobile-menu-btn {
+  display: none;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.customer-mobile-menu-btn:hover {
+  color: var(--golden);
+  background: rgba(212, 175, 55, 0.1);
+}
+
+/* التصميم المتجاوب */
+@media (max-width: 768px) {
+  .customer-navbar {
+    padding: 1rem;
+  }
+  
+  .customer-nav-links {
+    display: none;
+  }
+  
+  .customer-mobile-menu-btn {
+    display: block;
+  }
+  
+  .customer-nav-actions {
+    gap: 0.5rem;
+  }
+  
+  .customer-theme-toggle-button,
+  .customer-favorites-btn,
+  .customer-logout-btn {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+  }
+  
+  .customer-brand {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .customer-navbar-content {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  
+  .customer-nav-actions {
+    width: 100%;
+    justify-content: center;
+    order: 3;
+  }
+  
+  .customer-brand {
+    font-size: 1.3rem;
+  }
+  
+  .customer-theme-toggle-button span,
+  .customer-favorites-btn span,
+  .customer-logout-btn span {
+    display: none;
+  }
+  
+  .customer-theme-toggle-button,
+  .customer-favorites-btn,
+  .customer-logout-btn {
+    padding: 0.75rem;
+    min-width: 44px;
+    justify-content: center;
+  }
+}
+
+/* تأثيرات إضافية */
+.customer-nav-glow {
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+}
+
+.customer-nav-gold-text {
+  color: var(--golden);
+  text-shadow: 0 2px 4px rgba(212, 175, 55, 0.2);
+}
+
+/* شريط التمرير */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--golden);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--golden-hover);
+}
+

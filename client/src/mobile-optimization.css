@@ -1,0 +1,234 @@
+/* Mobile Optimization Styles */
+* {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Enable text selection for specific elements */
+input, textarea, [contenteditable] {
+  -webkit-user-select: text;
+  -khtml-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+/* Prevent zoom on input focus for iOS */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  select,
+  textarea,
+  input {
+    font-size: 16px;
+  }
+}
+
+/* Smooth scrolling for iOS */
+html {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* Prevent horizontal scroll */
+body {
+  overflow-x: hidden;
+  position: relative;
+  width: 100%;
+}
+
+/* Touch-friendly button sizes */
+button, 
+.btn,
+[role="button"] {
+  min-height: 44px;
+  min-width: 44px;
+  touch-action: manipulation;
+}
+
+/* Touch-friendly links */
+a {
+  min-height: 44px;
+  min-width: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+}
+
+/* Safe area for devices with notches */
+@supports (padding: max(0px)) {
+  .safe-area-top {
+    padding-top: max(env(safe-area-inset-top), 20px);
+  }
+  
+  .safe-area-bottom {
+    padding-bottom: max(env(safe-area-inset-bottom), 20px);
+  }
+  
+  .safe-area-left {
+    padding-left: max(env(safe-area-inset-left), 20px);
+  }
+  
+  .safe-area-right {
+    padding-right: max(env(safe-area-inset-right), 20px);
+  }
+}
+
+/* Mobile-specific media queries */
+@media (max-width: 768px) {
+  /* Reduce font sizes for better mobile readability */
+  body {
+    font-size: 14px;
+  }
+  
+  h1 {
+    font-size: 1.5rem;
+  }
+  
+  h2 {
+    font-size: 1.3rem;
+  }
+  
+  h3 {
+    font-size: 1.1rem;
+  }
+  
+  /* Improve touch targets */
+  .nav-item,
+  .menu-item {
+    padding: 12px 16px;
+  }
+  
+  /* Better spacing for mobile */
+  .container {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  
+  /* Optimize images for mobile */
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* Landscape orientation adjustments */
+@media (max-width: 768px) and (orientation: landscape) {
+  .mobile-landscape-hidden {
+    display: none !important;
+  }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  /* Optimize for retina displays */
+  .retina-optimized {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background-color: #1a1a1a;
+    --text-color: #ffffff;
+    --border-color: #333333;
+  }
+}
+
+/* Reduced motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Loading states for better UX */
+.loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Pull to refresh indicator */
+.pull-to-refresh {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  font-size: 14px;
+}
+
+/* Swipe gestures support */
+.swipeable {
+  touch-action: pan-y;
+}
+
+.swipeable-horizontal {
+  touch-action: pan-x;
+}
+
+/* Mobile navigation improvements */
+.mobile-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid #e0e0e0;
+  z-index: 1000;
+  padding: 8px 0;
+  padding-bottom: max(8px, env(safe-area-inset-bottom));
+}
+
+.mobile-nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  text-decoration: none;
+  color: #666;
+  font-size: 12px;
+  transition: color 0.2s ease;
+}
+
+.mobile-nav-item.active {
+  color: #1a1a1a;
+}
+
+.mobile-nav-icon {
+  width: 24px;
+  height: 24px;
+  margin-bottom: 4px;
+}

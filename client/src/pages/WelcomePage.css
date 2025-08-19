@@ -1,0 +1,638 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&display=swap');
+
+.welcome-page {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, #000000 0%, #1a1a1a 25%, #2d2d2d 50%, #1a1a1a 75%, #000000 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 1.5s ease-in-out;
+  font-family: 'Cairo', sans-serif;
+  overflow: hidden;
+  z-index: 9999;
+}
+
+.welcome-page.visible {
+  opacity: 1;
+}
+
+.welcome-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* خطوط متحركة محسنة في الخلفية */
+.animated-lines {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.line {
+  position: absolute;
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.4), transparent);
+  height: 2px;
+  width: 100%;
+  animation: lineMove 10s linear infinite;
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+}
+
+.line:nth-child(1) {
+  top: 15%;
+  animation-delay: 0s;
+  animation-duration: 15s;
+}
+
+.line:nth-child(2) {
+  top: 35%;
+  animation-delay: 3s;
+  animation-duration: 12s;
+}
+
+.line:nth-child(3) {
+  top: 55%;
+  animation-delay: 6s;
+  animation-duration: 18s;
+}
+
+.line:nth-child(4) {
+  top: 75%;
+  animation-delay: 9s;
+  animation-duration: 14s;
+}
+
+@keyframes lineMove {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+/* دوائر متحركة محسنة */
+.floating-circles {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.circle {
+  position: absolute;
+  border: 3px solid rgba(212, 175, 55, 0.3);
+  border-radius: 50%;
+  animation: circleFloat 20s ease-in-out infinite;
+  box-shadow: 0 0 30px rgba(212, 175, 55, 0.2);
+}
+
+.circle:nth-child(1) {
+  width: 120px;
+  height: 120px;
+  top: 8%;
+  left: 8%;
+  animation-delay: 0s;
+}
+
+.circle:nth-child(2) {
+  width: 180px;
+  height: 180px;
+  top: 65%;
+  right: 12%;
+  animation-delay: 5s;
+}
+
+.circle:nth-child(3) {
+  width: 100px;
+  height: 100px;
+  top: 45%;
+  left: 85%;
+  animation-delay: 10s;
+}
+
+.circle:nth-child(4) {
+  width: 140px;
+  height: 140px;
+  bottom: 15%;
+  left: 15%;
+  animation-delay: 15s;
+}
+
+@keyframes circleFloat {
+  0%, 100% {
+    transform: translateY(0px) scale(1) rotate(0deg);
+    opacity: 0.4;
+  }
+  25% {
+    transform: translateY(-40px) scale(1.1) rotate(90deg);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateY(-20px) scale(1.05) rotate(180deg);
+    opacity: 0.6;
+  }
+  75% {
+    transform: translateY(-50px) scale(1.15) rotate(270deg);
+    opacity: 0.8;
+  }
+}
+
+/* محتوى محسن بدون كرت */
+.welcome-content {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  color: white;
+  max-width: 800px;
+  padding: 2rem;
+  position: relative;
+  overflow: visible;
+  margin: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.welcome-text {
+  opacity: 0;
+  transform: translateY(60px);
+  transition: all 1.5s ease-out;
+}
+
+.welcome-text.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* شعار محسن */
+.logo-section {
+  margin-bottom: 2.5rem;
+}
+
+.geometric-logo {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  margin: 0 auto;
+  animation: logoRotate 25s linear infinite;
+}
+
+.logo-hexagon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(45deg, #D4AF37, #FFD700, #C9A94F);
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  animation: hexagonPulse 4s ease-in-out infinite;
+  box-shadow: 0 0 50px rgba(212, 175, 55, 0.6);
+}
+
+.logo-hexagon::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  background: linear-gradient(45deg, #000, #1a1a1a);
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
+.logo-center-diamond {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(45deg);
+  width: 25px;
+  height: 25px;
+  background: linear-gradient(45deg, #D4AF37, #FFD700);
+  animation: diamondGlow 3s ease-in-out infinite alternate;
+  box-shadow: 0 0 30px rgba(212, 175, 55, 0.8);
+}
+
+@keyframes logoRotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes hexagonPulse {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+}
+
+@keyframes diamondGlow {
+  0% {
+    box-shadow: 0 0 30px rgba(212, 175, 55, 0.6);
+    transform: translate(-50%, -50%) rotate(45deg) scale(1);
+  }
+  100% {
+    box-shadow: 0 0 60px rgba(212, 175, 55, 1);
+    transform: translate(-50%, -50%) rotate(45deg) scale(1.1);
+  }
+}
+
+/* عنوان محسن */
+.welcome-title {
+  font-size: 2rem;
+  font-weight: 900;
+  margin-bottom: 2rem;
+  line-height: 1.4;
+  text-shadow: 0 8px 16px rgba(0, 0, 0, 0.8);
+  position: relative;
+  width: 100%;
+}
+
+.title-line {
+  display: block;
+  margin-bottom: 1rem;
+  opacity: 0;
+  animation: titleSlideIn 1.5s ease-out forwards;
+  position: relative;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.title-line::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  width: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #D4AF37, #FFD700, #C9A94F);
+  transform: translateX(-50%);
+  animation: lineExpand 1.2s ease-out 0.8s forwards;
+  border-radius: 2px;
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
+}
+
+.title-line:nth-child(1) { animation-delay: 0.5s; }
+.title-line:nth-child(2) { animation-delay: 1s; }
+.title-line:nth-child(3) { animation-delay: 1.5s; }
+.title-line:nth-child(4) { animation-delay: 2s; }
+
+.title-line:nth-child(1)::after { animation-delay: 1.3s; }
+.title-line:nth-child(2)::after { animation-delay: 1.8s; }
+.title-line:nth-child(3)::after { animation-delay: 2.3s; }
+.title-line:nth-child(4)::after { animation-delay: 2.8s; }
+
+.evanox {
+  display: block;
+  font-size: 4rem;
+  font-weight: 900;
+  background: linear-gradient(45deg, #D4AF37, #FFD700, #C9A94F, #D4AF37);
+  background-size: 400% 400%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 1.5rem 0;
+  animation: evanoxFlow 5s ease-in-out infinite, evanoxShine 3s ease-in-out infinite alternate;
+  position: relative;
+  text-shadow: 0 0 50px rgba(212, 175, 55, 0.8);
+}
+
+@keyframes titleSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-80px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes lineExpand {
+  from {
+    width: 0;
+  }
+  to {
+    width: 150px;
+  }
+}
+
+@keyframes evanoxFlow {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes evanoxShine {
+  0% {
+    filter: drop-shadow(0 0 30px rgba(212, 175, 55, 0.7));
+  }
+  100% {
+    filter: drop-shadow(0 0 50px rgba(212, 175, 55, 1));
+  }
+}
+
+/* عنوان فرعي محسن */
+.welcome-subtitle {
+  margin: 2rem 0;
+  opacity: 0;
+  animation: subtitleFadeIn 2s ease-out 2.5s forwards;
+  width: 100%;
+}
+
+.welcome-subtitle h2 {
+  font-size: 1.6rem;
+  font-weight: 400;
+  margin: 0.5rem 0;
+  color: #f0f0f0;
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+  line-height: 1.5;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+@keyframes subtitleFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes brandFlow {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes brandShine {
+  0% {
+    filter: drop-shadow(0 0 25px rgba(212, 175, 55, 0.6));
+  }
+  100% {
+    filter: drop-shadow(0 0 45px rgba(212, 175, 55, 0.9));
+  }
+}
+
+/* شريط التحميل المحسن */
+.loading-container {
+  margin: 3rem auto;
+  width: 300px;
+  position: relative;
+}
+
+.circular-progress {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  margin: 0 auto;
+}
+
+.circular-track {
+  width: 100%;
+  height: 100%;
+  border: 10px solid rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  position: relative;
+  box-shadow: 0 0 30px rgba(212, 175, 55, 0.2);
+}
+
+.circular-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 10px solid transparent;
+  border-top: 10px solid #D4AF37;
+  border-right: 10px solid #FFD700;
+  border-radius: 50%;
+  animation: circularProgress 4s ease-in-out forwards;
+  box-shadow: 0 0 40px rgba(212, 175, 55, 0.4);
+}
+
+.circular-fill::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  border: 3px solid rgba(212, 175, 55, 0.4);
+  border-radius: 50%;
+  animation: circularGlow 3s ease-in-out infinite alternate;
+}
+
+.loading-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #D4AF37;
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.7);
+}
+
+@keyframes circularProgress {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes circularGlow {
+  0% {
+    box-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
+  }
+  100% {
+    box-shadow: 0 0 60px rgba(212, 175, 55, 0.8);
+  }
+}
+
+/* زر التخطي المحسن */
+.skip-button {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(255, 215, 0, 0.2));
+  border: 4px solid rgba(212, 175, 55, 0.6);
+  color: #D4AF37;
+  padding: 15px 45px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  border-radius: 40px;
+  cursor: pointer;
+  transition: all 0.6s ease;
+  font-family: 'Cairo', sans-serif;
+  margin-top: 3rem;
+  opacity: 0;
+  animation: buttonFadeIn 1.5s ease-out 3s forwards;
+  backdrop-filter: blur(20px);
+  position: relative;
+  overflow: hidden;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+}
+
+.skip-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.4), transparent);
+  transition: left 0.8s ease;
+}
+
+.skip-button:hover::before {
+  left: 100%;
+}
+
+.skip-button:hover {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.4), rgba(255, 215, 0, 0.4));
+  border-color: rgba(212, 175, 55, 1);
+  transform: translateY(-8px) scale(1.08);
+  box-shadow: 0 20px 50px rgba(212, 175, 55, 0.6);
+  color: #FFD700;
+}
+
+@keyframes buttonFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* التصميم المتجاوب المحسن */
+@media (max-width: 768px) {
+  .welcome-content {
+    padding: 1.5rem;
+    margin: 0.5rem;
+    max-width: 90vw;
+  }
+  
+  .welcome-title {
+    font-size: 1.6rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .evanox {
+    font-size: 2.4rem;
+    margin: 1rem 0;
+  }
+  
+  .welcome-subtitle h2 {
+    font-size: 1.3rem;
+  }
+  
+  .geometric-logo {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .logo-hexagon {
+    width: 65px;
+    height: 65px;
+  }
+  
+  .logo-center-diamond {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .circular-progress {
+    width: 140px;
+    height: 140px;
+  }
+  
+  .skip-button {
+    padding: 12px 30px;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .welcome-content {
+    padding: 1rem;
+    margin: 0.3rem;
+    max-width: 95vw;
+  }
+  
+  .welcome-title {
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+  }
+  
+  .evanox {
+    font-size: 1.8rem;
+    margin: 0.8rem 0;
+  }
+  
+  .welcome-subtitle h2 {
+    font-size: 1.1rem;
+    line-height: 1.4;
+  }
+  
+  .geometric-logo {
+    width: 70px;
+    height: 70px;
+  }
+  
+  .logo-hexagon {
+    width: 55px;
+    height: 55px;
+  }
+  
+  .logo-center-diamond {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .circular-progress {
+    width: 110px;
+    height: 110px;
+  }
+  
+  .skip-button {
+    padding: 8px 20px;
+    font-size: 0.85rem;
+  }
+}

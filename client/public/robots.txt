@@ -1,0 +1,10 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+
+# Disallow service worker and cache files
+Disallow: /sw.js
+Disallow: /manifest.json
+
+# Sitemap
+Sitemap: https://yourdomain.com/sitemap.xml

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار الألوان</title>
+    <style>
+        /* متغيرات الألوان للوضع المظلم والفاتح */
+        :root {
+            /* الوضع المظلم (افتراضي) */
+            --bg-primary: #121212;
+            --bg-secondary: #2C2C2C;
+            --matte-black: #121212;
+            --text-primary: #B0B0B0;
+            --text-secondary: #FFFFFF;
+            --accent-color: #D4AF37;
+            --accent-hover: #C9A94F;
+            --border-color: rgba(176, 176, 176, 0.3);
+            --shadow-color: rgba(0, 0, 0, 0.4);
+            --card-bg: #1a1a1a;
+        }
+
+        /* الوضع الفاتح */
+        [data-theme="light"] {
+            /* الخلفيات */
+            --bg-primary: #FFFFFF;
+            --bg-secondary: #F5F5F5;
+            --matte-black: #FFFFFF;
+            
+            /* النصوص */
+            --text-primary: #333333;
+            --text-secondary: #121212;
+            --text-muted: #666666;
+            
+            /* الألوان المميزة */
+            --accent-color: #D4AF37;
+            --accent-hover: #C9A94F;
+            
+            /* الحدود والظلال */
+            --border-color: #E0E0E0;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --card-bg: #FFFFFF;
+            
+            /* التدرجات */
+            --golden-gradient: linear-gradient(90deg, #D4AF37 0%, #C9A94F 100%);
+            --light-gradient: linear-gradient(180deg, #FFFFFF 0%, #F5F5F5 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--accent-color);
+            color: var(--matte-black);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+
+        .test-card {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 1rem 0;
+            box-shadow: 0 4px 16px var(--shadow-color);
+            transition: all 0.3s ease;
+        }
+
+        .test-card:hover {
+            border-color: var(--accent-color);
+            box-shadow: 0 8px 24px var(--shadow-color);
+        }
+
+        .test-title {
+            color: var(--accent-color);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+
+        .test-text {
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .test-input {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            margin: 0.5rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .test-input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+        }
+
+        .test-button {
+            background: var(--accent-color);
+            color: var(--matte-black);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+        }
+
+        .test-button:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+
+        .color-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .color-item {
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .bg-primary { background: var(--bg-primary); color: var(--text-secondary); }
+        .bg-secondary { background: var(--bg-secondary); color: var(--text-secondary); }
+        .text-primary { background: var(--text-primary); color: var(--bg-primary); }
+        .text-secondary { background: var(--text-secondary); color: var(--bg-primary); }
+        .accent { background: var(--accent-color); color: var(--matte-black); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="theme-toggle" onclick="toggleTheme()">تبديل الوضع</button>
+        
+        <h1 style="color: var(--accent-color); margin-bottom: 2rem;">اختبار الألوان - الوضع الفاتح/المظلم</h1>
+        
+        <div class="test-card">
+            <div class="test-title">معلومات الألوان الحالية</div>
+            <div class="color-info">
+                <div class="color-item bg-primary">الخلفية الأساسية</div>
+                <div class="color-item bg-secondary">الخلفية الثانوية</div>
+                <div class="color-item text-primary">النص الأساسي</div>
+                <div class="color-item text-secondary">النص الثانوي</div>
+                <div class="color-item accent">اللون المميز</div>
+            </div>
+        </div>
+
+        <div class="test-card">
+            <div class="test-title">اختبار النموذج</div>
+            <div class="test-text">اسم المنتج:</div>
+            <input type="text" class="test-input" placeholder="أدخل اسم المنتج">
+            
+            <div class="test-text">وصف المنتج:</div>
+            <textarea class="test-input" rows="4" placeholder="أدخل وصف المنتج"></textarea>
+            
+            <div class="test-text">نوع المنتج:</div>
+            <select class="test-input">
+                <option>اختر النوع</option>
+                <option>ذهب</option>
+                <option>فضة</option>
+                <option>ألماس</option>
+            </select>
+            
+            <button class="test-button">حفظ المنتج</button>
+            <button class="test-button" style="background: transparent; color: var(--accent-color); border: 2px solid var(--accent-color);">إلغاء</button>
+        </div>
+
+        <div class="test-card">
+            <div class="test-title">اختبار البطاقات</div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                <div class="test-card">
+                    <div class="test-title">بطاقة 1</div>
+                    <div class="test-text">هذا مثال على بطاقة في الوضع الفاتح/المظلم</div>
+                </div>
+                <div class="test-card">
+                    <div class="test-title">بطاقة 2</div>
+                    <div class="test-text">بطاقة أخرى لاختبار الألوان</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            // تحديث نص الزر
+            const button = document.querySelector('.theme-toggle');
+            button.textContent = newTheme === 'light' ? 'الوضع المظلم' : 'الوضع الفاتح';
+        }
+
+        // تحميل الوضع المحفوظ
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+                const button = document.querySelector('.theme-toggle');
+                button.textContent = savedTheme === 'light' ? 'الوضع المظلم' : 'الوضع الفاتح';
+            }
+        });
+    </script>
+</body>
+</html>

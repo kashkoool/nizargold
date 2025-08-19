@@ -1,0 +1,330 @@
+.App {
+  text-align: center;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: var(--bg-primary);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: var(--text-secondary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.App-link {
+  color: var(--accent-color);
+  transition: color 0.3s ease;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-primary);
+  transition: background 0.5s;
+}
+
+.login-container.customer {
+  background: linear-gradient(135deg, var(--bg-primary) 60%, var(--bg-secondary) 100%);
+}
+
+.login-container.owner {
+  background: linear-gradient(135deg, var(--bg-primary) 60%, var(--accent-color) 100%);
+}
+
+.login-container.animating {
+  animation: bg-fade 0.5s;
+}
+
+@keyframes bg-fade {
+  0% { filter: brightness(1.2); }
+  100% { filter: brightness(1); }
+}
+
+.login-box {
+  background: var(--bg-secondary);
+  padding: 2rem 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px var(--shadow-color);
+  text-align: center;
+  min-width: 320px;
+  transition: border 0.5s, box-shadow 0.5s, background 0.5s;
+}
+
+.login-box.box-animating {
+  animation: box-pop 0.5s;
+}
+
+@keyframes box-pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+.login-box h2 {
+  margin-bottom: 1.5rem;
+  color: var(--accent-color);
+  transition: color 0.5s;
+}
+
+.login-box input {
+  width: 100%;
+  padding: 0.7rem;
+  margin-bottom: 1rem;
+  border: none;
+  border-radius: 6px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 1rem;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.login-box button[type="submit"] {
+  width: 100%;
+  padding: 0.7rem;
+  background: var(--accent-color);
+  color: var(--matte-black);
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-bottom: 1rem;
+  transition: background 0.2s;
+}
+
+.login-box button[type="submit"]:hover {
+  background: var(--accent-hover);
+}
+
+.swap-btn {
+  background: transparent;
+  color: var(--accent-color);
+  border: none;
+  cursor: pointer;
+  font-size: 0.95rem;
+  text-decoration: underline;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: color 0.5s;
+}
+
+.swap-icon {
+  display: flex;
+  align-items: center;
+}
+
+.icon-spin {
+  animation: spin 0.5s linear;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Customer style */
+.login-container.customer .login-box {
+  border: 2px solid var(--border-color);
+}
+.login-container.customer .swap-btn {
+  color: var(--text-muted);
+}
+.login-container.customer .login-box h2 {
+  color: var(--text-muted);
+}
+
+/* Owner style */
+.login-container.owner .login-box {
+  border: 2px solid var(--accent-color);
+}
+.login-container.owner .login-box h2 {
+  color: var(--accent-color);
+}
+.login-container.owner .swap-btn {
+  color: var(--accent-color);
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+
+/* Large screens (1200px and up) */
+@media (min-width: 1200px) {
+  .login-box {
+    padding: 3rem 3.5rem;
+    min-width: 400px;
+  }
+  
+  .login-box h2 {
+    font-size: 2.2rem;
+  }
+  
+  .login-box input,
+  .login-box button[type="submit"] {
+    padding: 1rem;
+    font-size: 1.1rem;
+  }
+}
+
+/* Medium screens (768px to 1199px) */
+@media (max-width: 1199px) and (min-width: 768px) {
+  .login-box {
+    padding: 2.5rem 3rem;
+    min-width: 360px;
+  }
+  
+  .login-box h2 {
+    font-size: 2rem;
+  }
+}
+
+/* Small screens (481px to 767px) */
+@media (max-width: 767px) and (min-width: 481px) {
+  .login-box {
+    padding: 2rem 2.5rem;
+    min-width: 320px;
+    margin: 1rem;
+  }
+  
+  .login-box h2 {
+    font-size: 1.8rem;
+  }
+  
+  .login-box input,
+  .login-box button[type="submit"] {
+    padding: 0.8rem;
+    font-size: 1rem;
+  }
+}
+
+/* Extra small screens (320px to 480px) */
+@media (max-width: 480px) {
+  .login-container {
+    padding: 1rem;
+  }
+  
+  .login-box {
+    padding: 1.5rem 2rem;
+    min-width: 280px;
+    width: 100%;
+    max-width: 350px;
+  }
+  
+  .login-box h2 {
+    font-size: 1.6rem;
+    margin-bottom: 1rem;
+  }
+  
+  .login-box input,
+  .login-box button[type="submit"] {
+    padding: 0.7rem;
+    font-size: 0.95rem;
+    margin-bottom: 0.8rem;
+  }
+  
+  .swap-btn {
+    font-size: 0.9rem;
+  }
+}
+
+/* Very small screens (less than 320px) */
+@media (max-width: 319px) {
+  .login-container {
+    padding: 0.5rem;
+  }
+  
+  .login-box {
+    padding: 1rem 1.5rem;
+    min-width: 250px;
+  }
+  
+  .login-box h2 {
+    font-size: 1.4rem;
+  }
+  
+  .login-box input,
+  .login-box button[type="submit"] {
+    padding: 0.6rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Landscape orientation for mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+  .login-container {
+    padding: 0.5rem;
+  }
+  
+  .login-box {
+    padding: 1rem 2rem;
+    margin: 0.5rem;
+  }
+  
+  .login-box h2 {
+    margin-bottom: 0.8rem;
+  }
+  
+  .login-box input,
+  .login-box button[type="submit"] {
+    margin-bottom: 0.6rem;
+  }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .login-box {
+    box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .login-box {
+    background: #1a1a1a;
+  }
+  
+  .login-box input {
+    background: #0f0f0f;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .login-container,
+  .login-box,
+  .swap-btn {
+    transition: none;
+  }
+  
+  .login-container.animating,
+  .login-box.box-animating {
+    animation: none;
+  }
+}

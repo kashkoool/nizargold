@@ -1,0 +1,376 @@
+/* متغيرات الألوان الأساسية */
+:root {
+  --bg-primary: #0a0a0a;
+  --bg-secondary: #1a1a1a;
+  --matte-black: #121212;
+  --charcoal-gray: #2a2a2a;
+  --silver-gray: #3a3a3a;
+  --white: #ffffff;
+  --text-primary: #ffffff;
+  --text-secondary: #e0e0e0;
+  --text-muted: #a0a0a0;
+  --accent-color: #D4AF37;
+  --accent-hover: #C9A94F;
+  --border-color: #333333;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  --card-bg: #1e1e1e;
+  --golden: #D4AF37;
+  --golden-hover: #C9A94F;
+  --shadow-accent: 0 4px 20px rgba(212, 175, 55, 0.2);
+  --shadow-dark: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --golden-gradient: linear-gradient(135deg, #D4AF37 0%, #C9A94F 100%);
+  --light-gradient: linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 100%);
+  --success-color: #27AE60;
+  --error-color: #E74C3C;
+}
+
+/* متغيرات الألوان للوضع الفاتح */
+[data-theme="light"] {
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F5F5F5;
+  --matte-black: #FFFFFF;
+  --charcoal-gray: #F5F5F5;
+  --silver-gray: #E0E0E0;
+  --white: #FFFFFF;
+  --text-primary: #121212;
+  --text-secondary: #333333;
+  --text-muted: #666666;
+  --accent-color: #D4AF37;
+  --accent-hover: #C9A94F;
+  --border-color: #E0E0E0;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --card-bg: #FFFFFF;
+  --golden: #D4AF37;
+  --golden-hover: #C9A94F;
+  --shadow-accent: 0 4px 20px rgba(212, 175, 55, 0.15);
+  --shadow-dark: 0 8px 32px rgba(0, 0, 0, 0.1);
+  --golden-gradient: linear-gradient(135deg, #D4AF37 0%, #C9A94F 100%);
+  --light-gradient: linear-gradient(180deg, #FFFFFF 0%, #F5F5F5 100%);
+  --success-color: #27AE60;
+  --error-color: #E74C3C;
+}
+
+/* الحاوية الرئيسية */
+.register-container {
+  min-height: 100vh;
+  background: var(--bg-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.register-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.05) 0%, transparent 50%, rgba(212, 175, 55, 0.05) 100%);
+  pointer-events: none;
+}
+
+/* بطاقة التسجيل */
+.register-card {
+  background: var(--card-bg);
+  border: 2px solid var(--golden);
+  border-radius: 20px;
+  padding: 3rem 2.5rem;
+  width: 100%;
+  max-width: 450px;
+  box-shadow: var(--shadow-dark);
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+.register-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--golden-gradient);
+  border-radius: 20px 20px 0 0;
+}
+
+[data-theme="light"] .register-card {
+  background: var(--white);
+  border-color: var(--golden);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* عنوان الصفحة */
+.register-title {
+  font-size: 2.2rem;
+  font-weight: bold;
+  color: var(--golden);
+  text-align: center;
+  margin-bottom: 1rem;
+  text-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+}
+
+/* رسالة الترحيب */
+.register-welcome {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.register-welcome-text {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  line-height: 1.6;
+  opacity: 0.9;
+}
+
+/* النموذج */
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* حقول الإدخال */
+.register-input {
+  width: 100%;
+  padding: 1rem 1.2rem;
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  outline: none;
+  position: relative;
+}
+
+.register-input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+.register-input:focus {
+  border-color: var(--golden);
+  box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.1);
+  background: var(--bg-secondary);
+}
+
+[data-theme="light"] .register-input {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+[data-theme="light"] .register-input:focus {
+  border-color: var(--golden);
+  box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.1);
+}
+
+/* زر التسجيل */
+.register-button {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  background: var(--golden-gradient);
+  color: var(--white);
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  margin-top: 1rem;
+}
+
+.register-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.register-button:hover::before {
+  left: 100%;
+}
+
+.register-button:hover {
+  background: var(--golden-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+}
+
+.register-button:active {
+  transform: translateY(0);
+}
+
+/* رسائل النجاح والخطأ */
+.register-message {
+  text-align: center;
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.register-message.success {
+  background: rgba(39, 174, 96, 0.1);
+  color: var(--success-color);
+  border: 1px solid rgba(39, 174, 96, 0.3);
+}
+
+.register-message.error {
+  background: rgba(231, 76, 60, 0.1);
+  color: var(--error-color);
+  border: 1px solid rgba(231, 76, 60, 0.3);
+}
+
+/* رابط تسجيل الدخول */
+.register-login-link {
+  text-align: center;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.register-login-text {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+}
+
+.register-login-button {
+  color: var(--golden);
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.register-login-button:hover {
+  color: var(--golden-hover);
+  transform: translateY(-1px);
+}
+
+/* التصميم المتجاوب */
+@media (max-width: 768px) {
+  .register-container {
+    padding: 1rem 0.8rem;
+  }
+  
+  .register-card {
+    padding: 2.5rem 2rem;
+    max-width: 400px;
+  }
+  
+  .register-title {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+  }
+  
+  .register-welcome-text {
+    font-size: 1rem;
+  }
+  
+  .register-form {
+    gap: 1.2rem;
+  }
+  
+  .register-input {
+    padding: 0.9rem 1rem;
+    font-size: 0.95rem;
+  }
+  
+  .register-button {
+    padding: 0.9rem 1.2rem;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .register-container {
+    padding: 0.8rem 0.5rem;
+  }
+  
+  .register-card {
+    padding: 2rem 1.5rem;
+    max-width: 350px;
+  }
+  
+  .register-title {
+    font-size: 1.6rem;
+    margin-bottom: 1rem;
+  }
+  
+  .register-welcome-text {
+    font-size: 0.95rem;
+  }
+  
+  .register-form {
+    gap: 1rem;
+  }
+  
+  .register-input {
+    padding: 0.8rem 0.9rem;
+    font-size: 0.9rem;
+  }
+  
+  .register-button {
+    padding: 0.8rem 1rem;
+    font-size: 0.95rem;
+  }
+  
+  .register-message {
+    font-size: 0.9rem;
+    padding: 0.8rem;
+  }
+}
+
+/* تحسينات للانتقالات السلسة */
+.register-container * {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+/* تأثيرات إضافية */
+.register-card {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* شريط التمرير */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--golden);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--golden-hover);
+}

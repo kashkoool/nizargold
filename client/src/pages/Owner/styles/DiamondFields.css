@@ -1,0 +1,589 @@
+/* DiamondFields.css - تصميم فاخر لحقول الألماس */
+:root {
+  --matte-black: #121212;
+  --charcoal-gray: #2C2C2C;
+  --bg-secondary: #2C2C2C;
+  --slate-gray: #666666;
+  --silver-gray: #B0B0B0;
+  --golden: #D4AF37;
+  --golden-hover: #C9A94F;
+  --white: #FFFFFF;
+  --border-color: rgba(176, 176, 176, 0.3);
+  --accent-gradient: linear-gradient(135deg, #D4AF37 0%, #C9A94F 100%);
+  --shadow-accent: 0 4px 20px rgba(212, 175, 55, 0.3);
+  --shadow-dark: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --text-primary: #B0B0B0;
+  --text-secondary: #FFFFFF;
+  --text-muted: #666666;
+}
+
+/* الوضع الفاتح */
+[data-theme="light"] {
+  --matte-black: #FFFFFF;
+  --charcoal-gray: #FFFFFF;
+  --bg-secondary: #F5F5F5;
+  --slate-gray: #666666;
+  --silver-gray: #333333;
+  --golden: #D4AF37;
+  --golden-hover: #C9A94F;
+  --white: #121212;
+  --border-color: #E0E0E0;
+  --accent-gradient: linear-gradient(135deg, #D4AF37 0%, #C9A94F 100%);
+  --shadow-accent: 0 4px 20px rgba(212, 175, 55, 0.2);
+  --shadow-dark: 0 8px 32px rgba(0, 0, 0, 0.1);
+  --text-primary: #333333;
+  --text-secondary: #121212;
+  --text-muted: #666666;
+}
+
+/* الحاوية الرئيسية لحقول الألماس */
+.diamond-fields-container {
+  background: linear-gradient(145deg, var(--charcoal-gray) 0%, var(--bg-secondary) 100%);
+  border: 2px solid var(--border-color);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-dark);
+  position: relative;
+  overflow: hidden;
+  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.diamond-fields-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--accent-gradient);
+}
+
+/* عنوان القسم */
+.diamond-fields-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.diamond-fields-title {
+  color: var(--white);
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgba(212, 175, 55, 0.3);
+  transition: color 0.3s ease;
+}
+
+.diamond-fields-icon {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent-gradient);
+  box-shadow: var(--shadow-accent);
+}
+
+/* بطاقة الحجر */
+.stone-card {
+  background: linear-gradient(145deg, var(--charcoal-gray) 0%, var(--bg-secondary) 100%);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  box-shadow: var(--shadow-dark);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.stone-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-accent);
+  border-color: var(--golden);
+}
+
+/* رأس بطاقة الحجر */
+.stone-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.stone-card-title {
+  color: var(--white);
+  font-size: 1rem;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(212, 175, 55, 0.3);
+  transition: color 0.3s ease;
+}
+
+.stone-remove-button {
+  color: #E74C3C;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.stone-remove-button:hover {
+  background: rgba(231, 76, 60, 0.1);
+  transform: scale(1.1);
+}
+
+/* شبكة الحقول */
+.stone-fields-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+/* حقل الإدخال */
+.stone-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.stone-field-label {
+  color: var(--slate-gray);
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  opacity: 0.9;
+}
+
+.stone-field-input,
+.stone-field-select {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0.75rem;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.stone-field-input:focus,
+.stone-field-select:focus {
+  outline: none;
+  border-color: var(--golden);
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+  background: var(--charcoal-gray);
+}
+
+.stone-field-input::placeholder {
+  color: var(--text-muted);
+}
+
+.stone-field-input[readonly] {
+  background: rgba(212, 175, 55, 0.1);
+  color: var(--golden);
+  border-color: var(--golden);
+}
+
+/* بطاقة إضافة حجر جديد */
+.add-stone-card {
+  background: var(--bg-secondary);
+  border: 2px dashed var(--border-color);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+}
+
+.add-stone-card:hover {
+  border-color: var(--golden);
+  box-shadow: var(--shadow-accent);
+}
+
+.add-stone-title {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  text-shadow: 0 1px 2px rgba(212, 175, 55, 0.3);
+}
+
+/* أزرار الإجراءات */
+.stone-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(176, 176, 176, 0.1);
+}
+
+.stone-button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.stone-button.cancel {
+  background: rgba(176, 176, 176, 0.1);
+  color: var(--slate-gray);
+  border: 1px solid rgba(176, 176, 176, 0.3);
+}
+
+.stone-button.cancel:hover {
+  background: rgba(176, 176, 176, 0.2);
+  transform: translateY(-1px);
+}
+
+.stone-button.add {
+  background: var(--accent-gradient);
+  color: #000;
+  box-shadow: var(--shadow-accent);
+}
+
+.stone-button.add:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(176, 176, 176, 0.4);
+}
+
+/* زر إضافة حجر جديد */
+.add-stone-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--accent-gradient);
+  color: #000;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-accent);
+}
+
+.add-stone-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(176, 176, 176, 0.4);
+}
+
+/* ملخص الأحجار */
+.stones-summary {
+  background: linear-gradient(145deg, #2a2a2a 0%, #3a3a3a 100%);
+  border: 1px solid rgba(176, 176, 176, 0.2);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+  box-shadow: var(--shadow-dark);
+}
+
+.stones-summary-title {
+  color: var(--silver-gray);
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  text-shadow: 0 1px 2px rgba(176, 176, 176, 0.3);
+}
+
+.stones-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.stones-summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.stones-summary-label {
+  color: var(--slate-gray);
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+.stones-summary-value {
+  color: var(--silver-gray);
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.stones-summary-price {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.price-badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.price-badge.usd {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.3) 0%, rgba(255, 193, 7, 0.2) 100%);
+  color: #FFD700;
+  border: 1px solid rgba(255, 215, 0, 0.6);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  font-weight: 700;
+}
+
+.price-badge.syp {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.3) 0%, rgba(255, 193, 7, 0.2) 100%);
+  color: #FFD700;
+  border: 1px solid rgba(255, 215, 0, 0.6);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  font-weight: 700;
+}
+
+/* تحسينات للأجهزة المحمولة */
+@media (max-width: 768px) {
+  .diamond-fields-container {
+    padding: 1rem;
+  }
+  
+  .stone-fields-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .stones-summary-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .stone-actions {
+    flex-direction: column;
+  }
+  
+  .stone-button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* تأثيرات إضافية */
+.stone-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--accent-gradient);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.stone-card:hover::before {
+  opacity: 1;
+}
+
+/* تأثيرات الحركة */
+@keyframes stonePulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(176, 176, 176, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(176, 176, 176, 0.4);
+  }
+}
+
+.stone-pulse {
+  animation: stonePulse 2s infinite;
+}
+
+/* تأثير التحميل */
+.stone-loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.stone-loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid var(--silver-gray);
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ===== تحسينات الوضع الفاتح ===== */
+
+/* تحسينات للوضع الفاتح */
+[data-theme="light"] .diamond-fields-container {
+  background: linear-gradient(145deg, var(--charcoal-gray) 0%, var(--bg-secondary) 100%);
+  border-color: var(--border-color);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="light"] .diamond-fields-title {
+  color: var(--golden);
+  text-shadow: 0 2px 4px rgba(212, 175, 55, 0.3);
+}
+
+[data-theme="light"] .stone-card {
+  background: linear-gradient(145deg, var(--charcoal-gray) 0%, var(--bg-secondary) 100%);
+  border-color: var(--border-color);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .stone-card:hover {
+  border-color: var(--golden);
+  box-shadow: 0 8px 24px rgba(212, 175, 55, 0.2);
+}
+
+[data-theme="light"] .stone-card-header {
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="light"] .stone-card-title {
+  color: var(--white);
+  text-shadow: 0 1px 2px rgba(212, 175, 55, 0.3);
+}
+
+[data-theme="light"] .stone-field-label {
+  color: var(--text-secondary);
+}
+
+[data-theme="light"] .stone-field-input,
+[data-theme="light"] .stone-field-select {
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  border-color: var(--border-color);
+}
+
+[data-theme="light"] .stone-field-input:focus,
+[data-theme="light"] .stone-field-select:focus {
+  border-color: var(--golden);
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
+  background: var(--charcoal-gray);
+}
+
+[data-theme="light"] .stone-field-input::placeholder {
+  color: var(--text-muted);
+}
+
+[data-theme="light"] .stone-field-input[readonly] {
+  background: rgba(212, 175, 55, 0.1);
+  color: var(--golden);
+  border-color: var(--golden);
+}
+
+[data-theme="light"] .add-stone-card {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+  color: var(--text-secondary);
+}
+
+[data-theme="light"] .add-stone-card:hover {
+  border-color: var(--golden);
+  box-shadow: 0 4px 16px rgba(212, 175, 55, 0.2);
+}
+
+[data-theme="light"] .add-stone-title {
+  color: var(--text-secondary);
+}
+
+[data-theme="light"] .stone-button {
+  background: var(--accent-color);
+  color: var(--matte-black);
+  border-color: var(--accent-color);
+}
+
+[data-theme="light"] .stone-button:hover {
+  background: var(--accent-hover);
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+}
+
+[data-theme="light"] .stone-button.cancel {
+  background: transparent;
+  color: var(--accent-color);
+  border-color: var(--accent-color);
+}
+
+[data-theme="light"] .stone-button.cancel:hover {
+  background: var(--accent-color);
+  color: var(--matte-black);
+}
+
+[data-theme="light"] .stone-button.add {
+  background: var(--accent-color);
+  color: var(--matte-black);
+  border-color: var(--accent-color);
+}
+
+[data-theme="light"] .stone-button.add:hover {
+  background: var(--accent-hover);
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+}
+
+[data-theme="light"] .add-stone-button {
+  background: var(--accent-color);
+  color: var(--matte-black);
+  border-color: var(--accent-color);
+}
+
+[data-theme="light"] .add-stone-button:hover {
+  background: var(--accent-hover);
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+}
+
+[data-theme="light"] .stones-summary {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .stones-summary-title {
+  color: var(--text-secondary);
+}
+
+[data-theme="light"] .stones-summary-label {
+  color: var(--text-muted);
+}
+
+[data-theme="light"] .stones-summary-value {
+  color: var(--text-secondary);
+}
+
+[data-theme="light"] .stones-summary-price {
+  color: var(--golden);
+}
+
+[data-theme="light"] .price-badge.usd {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.25) 0%, rgba(255, 193, 7, 0.15) 100%);
+  color: #DAA520;
+  border: 1px solid rgba(255, 215, 0, 0.5);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  font-weight: 700;
+}
+
+[data-theme="light"] .price-badge.syp {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.25) 0%, rgba(255, 193, 7, 0.15) 100%);
+  color: #DAA520;
+  border: 1px solid rgba(255, 215, 0, 0.5);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  font-weight: 700;
+} 

@@ -1,0 +1,60 @@
+{
+  "short_name": "Nizar Jewellery",
+  "name": "Nizar Jewellery - مجوهرات نزار",
+  "description": "موقع فاخر للمجوهرات بالتعاون مع EVANOX",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "./logo192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./logo512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#1a1a1a",
+  "background_color": "#ffffff",
+  "categories": ["shopping", "lifestyle"],
+  "lang": "ar",
+  "dir": "rtl",
+  "scope": "/",
+  "prefer_related_applications": false,
+        "shortcuts": [
+    {
+      "name": "المنتجات",
+      "short_name": "المنتجات",
+      "description": "عرض جميع المنتجات",
+      "url": "/home",
+      "icons": [
+        {
+          "src": "./logo192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "المفضلة",
+      "short_name": "المفضلة",
+      "description": "عرض المنتجات المفضلة",
+      "url": "/favorites",
+      "icons": [
+        {
+          "src": "./logo192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}

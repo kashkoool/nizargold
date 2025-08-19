@@ -1,0 +1,108 @@
+/* ===== ستايل خاص بمحرك البحث في الوضع النهاري ===== */
+
+/* إزالة اللون الذهبي وجعل محرك البحث أبيض */
+[data-theme="light"] .search-filter-section .search-input {
+  background: #FFFFFF !important;
+  border: 2px solid #E0E0E0 !important;
+  color: #000000 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+[data-theme="light"] .search-filter-section .search-input:focus {
+  background: #FFFFFF !important;
+  border: 2px solid #D4AF37 !important;
+  color: #000000 !important;
+  box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15) !important;
+}
+
+[data-theme="light"] .search-filter-section .search-input:hover {
+  background: #FFFFFF !important;
+  border: 2px solid #D4AF37 !important;
+  color: #000000 !important;
+}
+
+[data-theme="light"] .search-filter-section .search-input::placeholder {
+  color: #999999 !important;
+}
+
+/* جعل أيقونة البحث باللون الرمادي */
+[data-theme="light"] .search-filter-section .search-icon {
+  color: #666666 !important;
+}
+
+/* القوائم المنسدلة - أبيض */
+[data-theme="light"] .search-filter-section .filter-select {
+  background: #FFFFFF !important;
+  border: 2px solid #E0E0E0 !important;
+  color: #000000 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+  -webkit-text-fill-color: #000000 !important;
+  -webkit-text-stroke: 0 !important;
+}
+
+[data-theme="light"] .search-filter-section .filter-select:focus {
+  background: #FFFFFF !important;
+  border: 2px solid #D4AF37 !important;
+  color: #000000 !important;
+  box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15) !important;
+  -webkit-text-fill-color: #000000 !important;
+  -webkit-text-stroke: 0 !important;
+}
+
+[data-theme="light"] .search-filter-section .filter-select:hover {
+  background: #FFFFFF !important;
+  border: 2px solid #D4AF37 !important;
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+  -webkit-text-stroke: 0 !important;
+}
+
+[data-theme="light"] .search-filter-section .filter-select option {
+  background: #FFFFFF !important;
+  color: #000000 !important;
+}
+
+/* قواعد موحدة لخيارات "جميع" */
+[data-theme="light"] .filter-select option[value="all"],
+[data-theme="light"] select.filter-select option[value="all"],
+[data-theme="light"] .search-filter-section .filter-select option[value="all"],
+[data-theme="light"] option[value="all"] {
+  background: #FFFFFF !important;
+  color: #000000 !important;
+  font-weight: 700 !important;
+  -webkit-text-fill-color: #000000 !important;
+  -webkit-text-stroke: 0 !important;
+}
+
+/* قواعد إضافية قوية لخيارات "جميع" */
+[data-theme="light"] .filter-select option[value="all"]:hover,
+[data-theme="light"] select.filter-select option[value="all"]:hover,
+[data-theme="light"] .search-filter-section .filter-select option[value="all"]:hover,
+[data-theme="light"] option[value="all"]:hover {
+  background: #FFFFFF !important;
+  color: #000000 !important;
+  font-weight: 700 !important;
+  -webkit-text-fill-color: #000000 !important;
+  -webkit-text-stroke: 0 !important;
+}
+
+/* جعل أيقونات الفلترة باللون الرمادي */
+[data-theme="light"] .search-filter-section .filter-icon {
+  color: #666666 !important;
+}
+
+/* زر المسح يبقى أحمر */
+[data-theme="light"] .search-filter-section .clear-filters-button {
+  background: #E74C3C !important;
+  color: #FFFFFF !important;
+  border: 2px solid #E74C3C !important;
+  box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3) !important;
+}
+
+[data-theme="light"] .search-filter-section .clear-filters-button:hover {
+  background: #C0392B !important;
+  border: 2px solid #C0392B !important;
+  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4) !important;
+}
+
+
