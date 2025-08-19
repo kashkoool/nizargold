@@ -22,7 +22,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "serve": "npx serve -s build -l $PORT"
+    "serve": "npx serve -s build -l $PORT",
+    "debug": "echo '=== REACT FRONTEND STARTING ===' && echo 'Environment:' $NODE_ENV && echo 'Port:' $PORT && npm run build && npm run serve"
   },
   "proxy": "http://localhost:5001",
   "eslintConfig": {

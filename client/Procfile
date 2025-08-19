@@ -1,1 +1,1 @@
-web: npm install && npm run build && npx serve -s build -l $PORT
+web: echo "Starting React Frontend..." && npm install && echo "Building React app..." && npm run build && echo "Serving React app..." && npx serve -s build -l $PORT
