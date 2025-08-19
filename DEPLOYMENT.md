@@ -32,8 +32,8 @@ railway up
 1. Go to [Railway Dashboard](https://railway.app/dashboard)
 2. Click "New Project"
 3. Choose "Deploy from GitHub repo"
-4. Select your repository
-5. Railway will automatically detect it's a Node.js project
+4. Select your repository: `kashkoool/nizargold`
+5. Railway will automatically detect the Node.js backend in the `server/` directory
 
 ### 3. Configure Environment Variables
 In Railway dashboard, go to your project → Variables tab and add:
@@ -59,6 +59,16 @@ For the React frontend, you have two options:
 ### 5. Update CORS (if needed)
 If you deploy frontend separately, update the `CLIENT_URL` environment variable in Railway to match your frontend domain.
 
+## Project Structure
+```
+nizargold/
+├── server/          # Backend (Node.js/Express)
+├── client/          # Frontend (React)
+├── railway.json     # Railway configuration
+├── nixpacks.toml    # Build configuration
+└── package.json     # Root package.json
+```
+
 ## Environment Variables Reference
 
 | Variable | Description | Required |
@@ -81,3 +91,13 @@ Your app includes a health check endpoint at `/` that returns "API is running...
 
 ### Logs
 Check Railway logs in the dashboard for debugging information.
+
+## Railway Configuration Files
+
+### railway.json
+- Specifies `server/` as the source directory
+- Sets up health checks and restart policies
+
+### nixpacks.toml
+- Provides specific build instructions for Railway
+- Ensures proper Node.js setup and installation
