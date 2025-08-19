@@ -5,7 +5,7 @@
     "sourceDirectory": "server"
   },
   "deploy": {
-    "startCommand": "npm start",
+    "startCommand": "cd server && npm install && npm start",
     "healthcheckPath": "/",
     "healthcheckTimeout": 100,
     "restartPolicyType": "ON_FAILURE",
