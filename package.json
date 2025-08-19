@@ -3,9 +3,6 @@
   "version": "1.0.0",
   "description": "FNizar Gold - Jewelry Management System",
   "private": true,
-  "scripts": {
-    "start": "cd server && npm start"
-  },
   "engines": {
     "node": ">=16.0.0",
     "npm": ">=8.0.0"
