@@ -5,6 +5,15 @@ require('dotenv').config();
 
 const app = express();
 
+// Add security headers
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  next();
+});
+
 // Add debugging information
 console.log('=== BACKEND SERVER STARTING ===');
 console.log('Environment:', process.env.NODE_ENV || 'development');
@@ -54,7 +63,7 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
 // Example route
 app.get('/', (req, res) => {
   console.log('Backend API endpoint hit:', req.path);
-  res.send('BACKEND API is running... (This should NOT show on frontend)');
+  res.status(404).send('Not Found');
 });
 
 // Test route for debugging
