@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { DollarSign, RefreshCw, Save, AlertCircle, CheckCircle, X, Calculator, Moon, Sun } from 'lucide-react';
+import { apiCall } from '../../utils/api';
 import './styles/MaterialPriceManager.css';
 
 const MaterialPriceManager = ({ onBack }) => {
@@ -30,7 +31,8 @@ const MaterialPriceManager = ({ onBack }) => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('/api/material-prices', {
+      const res = await apiCall('/api/material-prices', {
+        method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -173,7 +175,7 @@ const MaterialPriceManager = ({ onBack }) => {
       // Log the request data
       console.log(`🔄 Updating ${material} price:`, requestBody);
       
-      const res = await fetch('/api/material-prices', {
+      const res = await apiCall('/api/material-prices', {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -218,7 +220,7 @@ const MaterialPriceManager = ({ onBack }) => {
       // Log the request data
       console.log(`🔄 Updating products for ${material}:`, requestBody);
       
-      const res = await fetch('/api/material-prices/update-products', {
+      const res = await apiCall('/api/material-prices/update-products', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

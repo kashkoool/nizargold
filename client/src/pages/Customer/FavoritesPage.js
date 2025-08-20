@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Heart, Eye, MessageCircle, ArrowLeft, Trash2, Share2, ShoppingBag, Sun, Moon } from 'lucide-react';
 import './styles/FavoritesPage.css';
 
@@ -66,28 +67,22 @@ const FavoritesPage = () => {
   const [showRemoveConfirm, setShowRemoveConfirm] = useState({ open: false, productId: null });
   const [showClearAllConfirm, setShowClearAllConfirm] = useState(false);
   const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const navigate = useNavigate();
 
   // Helper: fetch with auto-refresh on 401
   async function fetchWithRefresh(url, options = {}, retry = true) {
-    console.log('🌐 Fetching URL:', url);
-    console.log('🌐 Options:', options);
-    
-    let res = await fetch(url, options);
-    console.log('🌐 Initial response status:', res.status);
-    
+    let res = await apiCall(url, options);
     if (res.status === 401 && retry) {
-      console.log('🔄 Token expired, trying to refresh...');
-      const refreshRes = await fetch('/api/users/refresh', { method: 'POST', credentials: 'include' });
+      // Try to refresh the access token
+      const refreshRes = await apiCall('/api/users/refresh', { method: 'POST', credentials: 'include' });
       if (refreshRes.ok) {
-        console.log('✅ Token refreshed successfully');
-        res = await fetch(url, options);
-        console.log('🌐 Retry response status:', res.status);
+        // Retry the original request
+        res = await apiCall(url, options);
       } else {
-        console.log('❌ Token refresh failed, redirecting to login');
-        localStorage.removeItem('user');
+        // Refresh failed, force logout
         localStorage.removeItem('token');
-        window.location.href = '/login';
-        return res;
+        localStorage.removeItem('user');
+        navigate('/login');
       }
     }
     return res;

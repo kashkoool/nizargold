@@ -1,21 +1,26 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { apiCall } from '../utils/api';
 import './Home.css';
 
 const Home = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProducts = async () => {
-      setLoading(true);
-      const res = await fetch('/api/products?page=1&limit=10');
-      if (res.ok) {
+      try {
+        const res = await apiCall('/api/products?page=1&limit=10');
         const data = await res.json();
         setProducts(data.products || []);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
+
     fetchProducts();
     
     // تحديث تلقائي كل دقيقة للتأكد من تحديث الأسعار

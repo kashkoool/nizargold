@@ -1,51 +1,52 @@
 import React, { useState, useEffect } from 'react';
 import { Bug, RefreshCw, Eye, X } from 'lucide-react';
+import { apiCall } from '../../utils/api';
 import './styles/PriceDebugger.css';
 
 const PriceDebugger = ({ onBack }) => {
-  const [materialPrices, setMaterialPrices] = useState([]);
+  const [prices, setPrices] = useState({});
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(false);
-
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      const token = localStorage.getItem('token');
-      
-      // Fetch material prices
-      const pricesRes = await fetch('/api/material-prices', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-      
-      if (pricesRes.ok) {
-        const prices = await pricesRes.json();
-        setMaterialPrices(prices);
-        console.log('📊 Material Prices:', prices);
-      }
-      
-      // Fetch products
-      const productsRes = await fetch('/api/products', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-      
-      if (productsRes.ok) {
-        const data = await productsRes.json();
-        setProducts(data.products || []);
-        console.log('📦 Products:', data.products);
-      }
-    } catch (err) {
-      console.error('❌ Error fetching data:', err);
-    }
-    setLoading(false);
-  };
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchData();
   }, []);
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      
+      // Fetch material prices
+      const pricesRes = await apiCall('/api/material-prices', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      
+      if (pricesRes.ok) {
+        const pricesData = await pricesRes.json();
+        setPrices(pricesData.prices || {});
+      }
+
+      // Fetch products
+      const productsRes = await apiCall('/api/products', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      
+      if (productsRes.ok) {
+        const productsData = await productsRes.json();
+        setProducts(productsData.products || []);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="price-debugger-container">
@@ -85,9 +86,9 @@ const PriceDebugger = ({ onBack }) => {
       <div className="material-prices-section">
         <h3 className="material-prices-title">أسعار المواد الأساسية</h3>
         <div className="material-prices-grid">
-          {materialPrices.map((price) => (
-            <div key={price.material} className="material-price-card">
-              <h4 className="material-price-title">{price.material}</h4>
+          {Object.entries(prices).map(([material, price]) => (
+            <div key={material} className="material-price-card">
+              <h4 className="material-price-title">{material}</h4>
               <div className="material-price-details">
                 <div className="material-price-item">
                   <span className="material-price-label">USD:</span>

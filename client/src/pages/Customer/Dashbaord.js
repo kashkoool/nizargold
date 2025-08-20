@@ -3,9 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Eye, Sun, Moon, Heart, ShoppingCart, User, Search, Menu, X, MessageCircle, Instagram, XCircle } from 'lucide-react';
 import './styles/Dashboard.css';
 import './styles/Common.css';
-
-
-
+import { apiCall } from '../../utils/api';
 
 
 const featuredTabs = [
@@ -118,13 +116,13 @@ const Dashbaord = () => {
 
   // Helper: fetch with auto-refresh on 401
   async function fetchWithRefresh(url, options = {}, retry = true) {
-    let res = await fetch(url, options);
+    let res = await apiCall(url, options);
     if (res.status === 401 && retry) {
       // Try to refresh the access token
-      const refreshRes = await fetch('/api/users/refresh', { method: 'POST', credentials: 'include' });
+      const refreshRes = await apiCall('/api/users/refresh', { method: 'POST', credentials: 'include' });
       if (refreshRes.ok) {
         // Retry the original request
-        res = await fetch(url, options);
+        res = await apiCall(url, options);
       } else {
         // Refresh failed, force logout
         localStorage.removeItem('user');
@@ -139,11 +137,7 @@ const Dashbaord = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
-      const res = await fetchWithRefresh('/api/products?page=1&limit=24', {
-        headers: {
-          'Authorization': localStorage.getItem('token') ? `Bearer ${localStorage.getItem('token')}` : '',
-        },
-      });
+      const res = await fetchWithRefresh('/api/products?page=1&limit=24');
       if (res.ok) {
         const data = await res.json();
         const userId = user && user._id ? user._id : (user && user.id ? user.id : null);
@@ -160,11 +154,7 @@ const Dashbaord = () => {
 
     const fetchFavoriteCount = async () => {
       try {
-        const res = await fetchWithRefresh('/api/products/favorites/count', {
-          headers: {
-            'Authorization': localStorage.getItem('token') ? `Bearer ${localStorage.getItem('token')}` : '',
-          },
-        });
+        const res = await fetchWithRefresh('/api/products/favorites/count');
         if (res.ok) {
           const data = await res.json();
           setFavoriteCount(data.count || 0);
@@ -207,13 +197,7 @@ const Dashbaord = () => {
   const handleLike = async (productId) => {
     setLikeLoading(prev => ({ ...prev, [productId]: true }));
     const token = localStorage.getItem('token');
-    const res = await fetchWithRefresh(`/api/products/${productId}/like`, {
-      method: 'POST',
-      headers: {
-        'Authorization': token ? `Bearer ${token}` : '',
-        'Content-Type': 'application/json',
-      },
-    });
+    const res = await fetchWithRefresh(`/api/products/${productId}/like`);
     if (res.ok) {
       const data = await res.json();
       setProducts(prev => prev.map(p =>
@@ -251,11 +235,7 @@ const Dashbaord = () => {
   const fetchComments = async (productId) => {
     setCommentsLoading(true);
     const token = localStorage.getItem('token');
-    const res = await fetchWithRefresh(`/api/comments?product=${productId}`, {
-      headers: {
-        'Authorization': token ? `Bearer ${token}` : '',
-      },
-    });
+    const res = await fetchWithRefresh(`/api/comments?product=${productId}`);
     if (res.ok) {
       const data = await res.json();
       setComments(data);
@@ -445,6 +425,12 @@ const Dashbaord = () => {
     setContactModal(false);
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate('/');
+  };
+
   return (
     <div className="customer-dashboard-container">
       {/* Main Navbar */}
@@ -516,11 +502,7 @@ const Dashbaord = () => {
               
               <button
                 className="customer-logout-btn"
-                onClick={() => {
-                  localStorage.removeItem('user');
-                  localStorage.removeItem('token');
-                  window.location.href = 'http://localhost:3002/';
-                }}
+                onClick={handleLogout}
               >
                 تسجيل الخروج
               </button>

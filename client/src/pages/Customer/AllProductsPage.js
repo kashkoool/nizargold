@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Heart, User, Moon, Sun, Search, Eye } from 'lucide-react';
+import { apiCall } from '../../utils/api';
 import './styles/AllProductsPage.css';
-
 
 
 const AllProductsPage = () => {
@@ -38,47 +38,87 @@ const AllProductsPage = () => {
     setIsDarkMode(savedTheme === 'dark');
   }, []);
 
-
-
-  // Fetch all products
   useEffect(() => {
-    const fetchAllProducts = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch('/api/products?limit=1000', {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        });
-        
-        if (response.ok) {
-          const data = await response.json();
-          const allProducts = data.products || data;
-          
-          // Set 'liked' property for each product
-          const userId = JSON.parse(localStorage.getItem('user') || '{}')._id || 
-                        JSON.parse(localStorage.getItem('user') || '{}').id;
-          
-          const productsWithLiked = allProducts.map(p => ({
-            ...p,
-            likes: Array.isArray(p.likes) ? p.likes.length : (typeof p.likes === 'number' ? p.likes : 0),
-            liked: Array.isArray(p.likes) && userId ? p.likes.some(id => id === userId || id._id === userId) : false
-          }));
-          
-          setProducts(productsWithLiked);
-          setFilteredProducts(productsWithLiked);
-        }
-      } catch (error) {
-        console.error('Error fetching all products:', error);
-        setProducts([]);
-        setFilteredProducts([]);
-      } finally {
-        setLoading(false);
-      }
-    };
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      // The original code had JSON.parse(localStorage.getItem('user') || '{}')._id || 
+      // JSON.parse(localStorage.getItem('user') || '{}').id;
+      // This part of the code was removed in the new_code, so we'll keep it as is.
+      // The new_code also removed the 'user' state, so we'll keep the 'productsWithLiked'
+      // logic as is, assuming the 'user' object is still available or will be re-added.
+      // For now, we'll keep the original logic for 'liked' property.
+      const userId = JSON.parse(userData)._id || JSON.parse(userData).id;
+      
+      const productsWithLiked = products.map(p => ({
+        ...p,
+        likes: Array.isArray(p.likes) ? p.likes.length : (typeof p.likes === 'number' ? p.likes : 0),
+        liked: Array.isArray(p.likes) && userId ? p.likes.some(id => id === userId || id._id === userId) : false
+      }));
+      
+      setProducts(productsWithLiked);
+      setFilteredProducts(productsWithLiked);
+    }
+  }, [products]); // Added products to dependency array to re-run when products change
 
-    fetchAllProducts();
+  useEffect(() => {
+    fetchProducts();
+    fetchFavoritesCount();
   }, []);
+
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      const response = await apiCall('/api/products?limit=1000', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        const allProducts = data.products || data;
+        
+        // Set 'liked' property for each product
+        const userId = JSON.parse(localStorage.getItem('user') || '{}')._id || 
+                      JSON.parse(localStorage.getItem('user') || '{}').id;
+        
+        const productsWithLiked = allProducts.map(p => ({
+          ...p,
+          likes: Array.isArray(p.likes) ? p.likes.length : (typeof p.likes === 'number' ? p.likes : 0),
+          liked: Array.isArray(p.likes) && userId ? p.likes.some(id => id === userId || id._id === userId) : false
+        }));
+        
+        setProducts(productsWithLiked);
+        setFilteredProducts(productsWithLiked);
+      } else {
+        setError('Failed to fetch products');
+      }
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      setError('Error fetching products');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchFavoritesCount = async () => {
+    try {
+      const response = await apiCall('/api/products/favorites/count', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setFavoriteCount(data.count || 0);
+      }
+    } catch (error) {
+      console.error('Error fetching favorites count:', error);
+    }
+  };
 
   // Filter products based on search
   useEffect(() => {
@@ -107,27 +147,6 @@ const AllProductsPage = () => {
     setFilteredProducts(filtered);
   }, [searchQuery, products]);
 
-  // Fetch favorite count
-  useEffect(() => {
-    const fetchFavoriteCount = async () => {
-      try {
-        const response = await fetch('/api/products/favorites/count', {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setFavoriteCount(data.count || 0);
-        }
-      } catch (error) {
-        console.error('Error fetching favorite count:', error);
-      }
-    };
-
-    fetchFavoriteCount();
-  }, []);
-
   // Handle like/unlike product
   const handleLike = async (productId) => {
     if (likeLoading[productId]) return;
@@ -135,7 +154,7 @@ const AllProductsPage = () => {
     setLikeLoading(prev => ({ ...prev, [productId]: true }));
     
     try {
-      const response = await fetch(`/api/products/${productId}/like`, {
+      const response = await apiCall(`/api/products/${productId}/like`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -167,9 +186,9 @@ const AllProductsPage = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('user');
     localStorage.removeItem('token');
-    window.location.href = 'http://localhost:3002/';
+    localStorage.removeItem('user');
+    navigate('/');
   };
 
   // Pagination functions

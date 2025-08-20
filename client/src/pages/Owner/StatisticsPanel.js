@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Heart, MessageCircle, TrendingUp, Eye, Star, X, BarChart3, Moon, Sun } from 'lucide-react';
+import { apiCall } from '../../utils/api';
 import './styles/StatisticsPanel.css';
 
 const StatisticsPanel = ({ onBack }) => {
-  const [statistics, setStatistics] = useState(null);
+  const [statistics, setStatistics] = useState({});
   const [loading, setLoading] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [detailedStats, setDetailedStats] = useState(null);
@@ -15,47 +16,41 @@ const StatisticsPanel = ({ onBack }) => {
   }, []);
 
   const fetchStatistics = async () => {
-    setLoading(true);
     try {
-      const token = localStorage.getItem('token');
-      const res = await fetch('/api/statistics/products', {
+      setLoading(true);
+      const res = await apiCall('/api/statistics/products', {
+        method: 'GET',
         headers: {
-          'Authorization': `Bearer ${token}`,
-        },
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
       });
       
       if (res.ok) {
         const data = await res.json();
-        console.log('Statistics data:', data);
         setStatistics(data);
-      } else {
-        const errorData = await res.json();
-        console.error('Failed to fetch statistics:', errorData);
-        setStatistics(null);
       }
-    } catch (err) {
-      console.error('Failed to fetch statistics:', err);
-      setStatistics(null);
+    } catch (error) {
+      console.error('Error fetching statistics:', error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
-  const fetchProductDetails = async (productId) => {
+  const fetchProductStatistics = async (productId) => {
     try {
-      const token = localStorage.getItem('token');
-      const res = await fetch(`/api/statistics/products/${productId}`, {
+      const res = await apiCall(`/api/statistics/products/${productId}`, {
+        method: 'GET',
         headers: {
-          'Authorization': `Bearer ${token}`,
-        },
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
       });
       
       if (res.ok) {
         const data = await res.json();
-        setDetailedStats(data);
-        setShowDetails(true);
+        setSelectedProduct(data);
       }
-    } catch (err) {
-      console.error('Failed to fetch product details:', err);
+    } catch (error) {
+      console.error('Error fetching product statistics:', error);
     }
   };
 

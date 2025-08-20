@@ -1,88 +1,46 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  User, 
-  LogOut, 
-  Edit, 
-  Save, 
-  X,
-  Phone,
-  Mail,
-  MapPin,
-  Calendar,
-  Star,
-  Crown
-} from 'lucide-react';
+import { LogOut } from 'lucide-react';
+import { apiCall } from '../../utils/api';
 import './styles/ProfilePage.css';
 
 const ProfilePage = () => {
-  const navigate = useNavigate();
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem('user') || '{}'));
-  const [isEditing, setIsEditing] = useState(false);
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  // بيانات الملف الشخصي
-  const [profileData, setProfileData] = useState({
-    username: user.username || 'مستخدم',
-    nickname: user.nickname || 'كنية المستخدم',
-    email: user.email || 'user@example.com',
-    phone: user.phone || '+963 933 336 562',
-    address: user.address || 'دمشق، سوريا',
-    birthDate: user.birthDate || '1990-01-01',
-    preferences: user.preferences || {
-      notifications: true,
-      newsletter: true,
-      darkMode: true
-    }
-  });
-
-  // بيانات التعديل
-  const [editData, setEditData] = useState({ ...profileData });
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // تحميل البيانات
-    setLoading(false);
+    fetchUserProfile();
   }, []);
 
-  const handleEdit = () => {
-    setEditData({ ...profileData });
-    setIsEditing(true);
-  };
-
-  const handleSave = async () => {
+  const fetchUserProfile = async () => {
     try {
-      // تحديث البيانات في الخادم
-      const res = await fetch('/api/users/profile', {
-        method: 'PUT',
+      setLoading(true);
+      const res = await apiCall('/api/users/profile', {
+        method: 'GET',
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify(editData)
+        }
       });
-
+      
       if (res.ok) {
-        setProfileData(editData);
-        setIsEditing(false);
-        
-        // تحديث البيانات في localStorage
-        const updatedUser = { ...user, ...editData };
-        localStorage.setItem('user', JSON.stringify(updatedUser));
-        setUser(updatedUser);
+        const data = await res.json();
+        setUser(data.user);
+      } else {
+        setError('Failed to fetch profile');
       }
     } catch (error) {
-      console.error('Error updating profile:', error);
+      console.error('Error fetching profile:', error);
+      setError('Error fetching profile');
+    } finally {
+      setLoading(false);
     }
-  };
-
-  const handleCancel = () => {
-    setIsEditing(false);
-    setEditData({ ...profileData });
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('user');
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
     navigate('/');
   };
 

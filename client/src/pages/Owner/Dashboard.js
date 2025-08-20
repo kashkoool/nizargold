@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Store, Users, Plus, Search, Filter, DollarSign, BarChart3, X, Package, Star, Gem, Crown } from 'lucide-react';
 import Navbar from './Navbar';
 import ProductForm from './ProductForm';
@@ -388,19 +389,18 @@ function Dashboard() {
 
   // Helper: fetch with auto-refresh on 401
   async function fetchWithRefresh(url, options = {}, retry = true) {
-    let res = await fetch(url, options);
+    let res = await apiCall(url, options);
     if (res.status === 401 && retry) {
       // Try to refresh the access token
-      const refreshRes = await fetch('/api/users/refresh', { method: 'POST', credentials: 'include' });
+      const refreshRes = await apiCall('/api/users/refresh', { method: 'POST', credentials: 'include' });
       if (refreshRes.ok) {
         // Retry the original request
-        res = await fetch(url, options);
+        res = await apiCall(url, options);
       } else {
         // Refresh failed, force logout
-        localStorage.removeItem('user');
         localStorage.removeItem('token');
-        window.location.href = '/login';
-        return res;
+        localStorage.removeItem('user');
+        navigate('/login');
       }
     }
     return res;

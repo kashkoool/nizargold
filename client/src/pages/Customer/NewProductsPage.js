@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Heart, User, Moon, Sun, Search, ShoppingCart } from 'lucide-react';
+import { apiCall } from '../../utils/api';
 import './styles/NewProductsPage.css';
 
 const NewProductsPage = () => {
@@ -47,7 +48,8 @@ const NewProductsPage = () => {
     const fetchNewProducts = async () => {
       try {
         setLoading(true);
-        const response = await fetch('/api/products?limit=1000', {
+        const response = await apiCall('/api/products?limit=1000', {
+          method: 'GET',
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
@@ -159,7 +161,8 @@ const NewProductsPage = () => {
   useEffect(() => {
     const fetchFavoriteCount = async () => {
       try {
-        const response = await fetch('/api/products/favorites/count', {
+        const response = await apiCall('/api/products/favorites/count', {
+          method: 'GET',
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
@@ -177,9 +180,9 @@ const NewProductsPage = () => {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('user');
     localStorage.removeItem('token');
-    window.location.href = 'http://localhost:3002/';
+    localStorage.removeItem('user');
+    navigate('/');
   };
 
   const getProductCategory = (productName) => {
@@ -216,36 +219,40 @@ const NewProductsPage = () => {
   // Handle like/unlike product (same as dashboard)
   const handleLike = async (productId) => {
     setLikeLoading(prev => ({ ...prev, [productId]: true }));
-    const token = localStorage.getItem('token');
-    const res = await fetch(`/api/products/${productId}/like`, {
-      method: 'POST',
-      headers: {
-        'Authorization': token ? `Bearer ${token}` : '',
-        'Content-Type': 'application/json',
-      },
-    });
-    if (res.ok) {
-      const data = await res.json();
-      setProducts(prev => prev.map(p =>
-        p._id === productId ? { ...p, likes: data.likes, liked: data.liked } : p
-      ));
-      setFilteredProducts(prev => prev.map(p =>
-        p._id === productId ? { ...p, likes: data.likes, liked: data.liked } : p
-      ));
+    try {
+      const response = await apiCall(`/api/products/${productId}/like`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
       
-      // Update favorite count
-      const currentProduct = products.find(p => p._id === productId);
-      if (currentProduct) {
-        if (currentProduct.liked && !data.liked) {
-          // Product was unliked
-          setFavoriteCount(prev => Math.max(0, prev - 1));
-        } else if (!currentProduct.liked && data.liked) {
-          // Product was liked
-          setFavoriteCount(prev => prev + 1);
+      if (response.ok) {
+        const data = await response.json();
+        setProducts(prev => prev.map(p =>
+          p._id === productId ? { ...p, likes: data.likes, liked: data.liked } : p
+        ));
+        setFilteredProducts(prev => prev.map(p =>
+          p._id === productId ? { ...p, likes: data.likes, liked: data.liked } : p
+        ));
+        
+        // Update favorite count
+        const currentProduct = products.find(p => p._id === productId);
+        if (currentProduct) {
+          if (currentProduct.liked && !data.liked) {
+            // Product was unliked
+            setFavoriteCount(prev => Math.max(0, prev - 1));
+          } else if (!currentProduct.liked && data.liked) {
+            // Product was liked
+            setFavoriteCount(prev => prev + 1);
+          }
         }
       }
+    } catch (error) {
+      console.error('Error liking product:', error);
+    } finally {
+      setLikeLoading(prev => ({ ...prev, [productId]: false }));
     }
-    setLikeLoading(prev => ({ ...prev, [productId]: false }));
   };
 
   // Comment modal functions
@@ -264,12 +271,12 @@ const NewProductsPage = () => {
 
   const fetchComments = async (productId) => {
     setCommentsLoading(true);
-    const token = localStorage.getItem('token');
     try {
-      const response = await fetch(`/api/comments?product=${productId}`, {
+      const response = await apiCall(`/api/comments?product=${productId}`, {
+        method: 'GET',
         headers: {
-          'Authorization': token ? `Bearer ${token}` : '',
-        },
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
       });
       if (response.ok) {
         const data = await response.json();
@@ -284,13 +291,11 @@ const NewProductsPage = () => {
   const handleAddComment = async (e) => {
     e.preventDefault();
     if (!commentText.trim()) return;
-    const token = localStorage.getItem('token');
     try {
-      const response = await fetch('/api/comments', {
+      const response = await apiCall('/api/comments', {
         method: 'POST',
         headers: {
-          'Authorization': token ? `Bearer ${token}` : '',
-          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
         body: JSON.stringify({ product: commentModal.product._id, content: commentText })
       });

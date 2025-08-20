@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { LogOut, ChevronDown, Gem, Package, Sun, Moon } from 'lucide-react';
 import './styles/Navbar.css';
 
@@ -56,7 +56,8 @@ const Navbar = ({ onAddProduct }) => {
   // Logout handler
   const handleLogout = () => {
     localStorage.removeItem('token');
-    window.location.href = '/login';
+    localStorage.removeItem('user');
+    window.location.href = '/';
   };
 
   // دالة لإخفاء أيقونات الفلترة
