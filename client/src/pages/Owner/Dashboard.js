@@ -66,6 +66,7 @@ function useAutoLogout() {
 }
 
 function Dashboard() {
+  const navigate = useNavigate();
   useAutoLogout();
 
   // إضافة CSS مباشر لخيارات "جميع" فقط
