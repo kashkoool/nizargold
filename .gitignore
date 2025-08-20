@@ -70,3 +70,6 @@ Thumbs.db
 
 # Custom
 .qodo
+
+# Security - Admin creation scripts
+server/createOwner.js
