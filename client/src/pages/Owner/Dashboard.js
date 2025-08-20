@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Store, Users, Plus, Search, Filter, DollarSign, BarChart3, X, Package, Star, Gem, Crown } from 'lucide-react';
+import { apiCall } from '../../utils/api';
 import Navbar from './Navbar';
 import ProductForm from './ProductForm';
 import ProductList from './ProductList';

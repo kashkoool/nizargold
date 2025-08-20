@@ -1,41 +1,84 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogOut } from 'lucide-react';
+import { 
+  LogOut, 
+  User, 
+  Edit, 
+  Save, 
+  X,
+  Phone,
+  Mail,
+  MapPin,
+  Calendar,
+  Star,
+  Crown
+} from 'lucide-react';
 import { apiCall } from '../../utils/api';
 import './styles/ProfilePage.css';
 
 const ProfilePage = () => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   const navigate = useNavigate();
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem('user') || '{}'));
+  const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  // Profile data
+  const [profileData, setProfileData] = useState({
+    username: user.username || 'مستخدم',
+    nickname: user.nickname || 'كنية المستخدم',
+    email: user.email || 'user@example.com',
+    phone: user.phone || '+963 933 336 562',
+    address: user.address || 'دمشق، سوريا',
+    birthDate: user.birthDate || '1990-01-01',
+    preferences: user.preferences || {
+      notifications: true,
+      newsletter: true,
+      darkMode: true
+    }
+  });
+
+  // Edit data
+  const [editData, setEditData] = useState({ ...profileData });
 
   useEffect(() => {
-    fetchUserProfile();
+    // Load data
+    setLoading(false);
   }, []);
 
-  const fetchUserProfile = async () => {
+  const handleEdit = () => {
+    setEditData({ ...profileData });
+    setIsEditing(true);
+  };
+
+  const handleSave = async () => {
     try {
-      setLoading(true);
+      // Update data on server
       const res = await apiCall('/api/users/profile', {
-        method: 'GET',
+        method: 'PUT',
         headers: {
+          'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
+        },
+        body: JSON.stringify(editData)
       });
-      
+
       if (res.ok) {
-        const data = await res.json();
-        setUser(data.user);
-      } else {
-        setError('Failed to fetch profile');
+        setProfileData(editData);
+        setIsEditing(false);
+        
+        // Update data in localStorage
+        const updatedUser = { ...user, ...editData };
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        setUser(updatedUser);
       }
     } catch (error) {
-      console.error('Error fetching profile:', error);
-      setError('Error fetching profile');
-    } finally {
-      setLoading(false);
+      console.error('Error updating profile:', error);
     }
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    setEditData({ ...profileData });
   };
 
   const handleLogout = () => {
@@ -86,43 +129,35 @@ const ProfilePage = () => {
         <div className="profile-sidebar">
           <div className="profile-card">
             <div className="profile-avatar">
-                             <div className="avatar-circle">
-                 <span className="avatar-initials">{getInitials(profileData.username, profileData.nickname)}</span>
-               </div>
+              <div className="avatar-circle">
+                <span className="avatar-initials">{getInitials(profileData.username, profileData.nickname)}</span>
+              </div>
             </div>
-                         <div className="profile-info">
-               <h2 className="profile-name">
-                 {profileData.username}
-                 {profileData.nickname && profileData.nickname !== 'كنية المستخدم' && (
-                   <span className="profile-nickname"> {profileData.nickname}</span>
-                 )}
-               </h2>
-               <div className="membership-badge">
-                 {membership.icon}
-                 <span style={{ color: membership.color }}>{membership.level}</span>
-               </div>
-               <p className="profile-email">{profileData.email}</p>
-             </div>
+            <div className="profile-info">
+              <h2 className="profile-name">
+                {profileData.username}
+                {profileData.nickname && profileData.nickname !== 'كنية المستخدم' && (
+                  <span className="profile-nickname"> {profileData.nickname}</span>
+                )}
+              </h2>
+              <div className="membership-badge">
+                {membership.icon}
+                <span className="membership-level">{membership.level}</span>
+              </div>
+            </div>
           </div>
-
-          <nav className="profile-nav">
-            <button className="nav-item active">
-              <User className="nav-icon" />
-              <span>الملف الشخصي</span>
-            </button>
-          </nav>
 
           <button className="logout-btn" onClick={handleLogout}>
             <LogOut className="logout-icon" />
-            <span>تسجيل الخروج</span>
+            تسجيل الخروج
           </button>
         </div>
 
         {/* Main Content */}
-        <div className="profile-content">
+        <div className="profile-main">
           <div className="profile-section">
             <div className="section-header">
-              <h3>معلومات الحساب</h3>
+              <h3>المعلومات الشخصية</h3>
               {!isEditing && (
                 <button className="edit-btn" onClick={handleEdit}>
                   <Edit className="edit-icon" />
@@ -131,126 +166,122 @@ const ProfilePage = () => {
               )}
             </div>
 
-                         <div className="profile-form">
-               <div className="name-nickname-container">
-                 <div className="form-group">
-                   <label>اسم المستخدم</label>
-                   {isEditing ? (
-                     <input
-                       type="text"
-                       value={editData.username}
-                       onChange={(e) => setEditData({...editData, username: e.target.value})}
-                       className="form-input"
-                       placeholder="اسم المستخدم"
-                     />
-                   ) : (
-                     <div className="info-display">
-                       <User className="info-icon" />
-                       <span>{profileData.username}</span>
-                     </div>
-                   )}
-                 </div>
+            <div className="profile-fields">
+              <div className="profile-field">
+                <div className="field-label">
+                  <User className="field-icon" />
+                  <span>اسم المستخدم</span>
+                </div>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={editData.username}
+                    onChange={(e) => setEditData({ ...editData, username: e.target.value })}
+                    className="field-input"
+                  />
+                ) : (
+                  <span className="field-value">{profileData.username}</span>
+                )}
+              </div>
 
-                 <div className="form-group">
-                   <label>الكنية</label>
-                   {isEditing ? (
-                     <input
-                       type="text"
-                       value={editData.nickname}
-                       onChange={(e) => setEditData({...editData, nickname: e.target.value})}
-                       className="form-input"
-                       placeholder="الكنية"
-                     />
-                   ) : (
-                     <div className="info-display">
-                       <User className="info-icon" />
-                       <span>{profileData.nickname}</span>
-                     </div>
-                   )}
-                 </div>
-               </div>
+              <div className="profile-field">
+                <div className="field-label">
+                  <User className="field-icon" />
+                  <span>الكنية</span>
+                </div>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={editData.nickname}
+                    onChange={(e) => setEditData({ ...editData, nickname: e.target.value })}
+                    className="field-input"
+                  />
+                ) : (
+                  <span className="field-value">{profileData.nickname}</span>
+                )}
+              </div>
 
-              <div className="form-group">
-                <label>البريد الإلكتروني</label>
+              <div className="profile-field">
+                <div className="field-label">
+                  <Mail className="field-icon" />
+                  <span>البريد الإلكتروني</span>
+                </div>
                 {isEditing ? (
                   <input
                     type="email"
                     value={editData.email}
-                    onChange={(e) => setEditData({...editData, email: e.target.value})}
-                    className="form-input"
+                    onChange={(e) => setEditData({ ...editData, email: e.target.value })}
+                    className="field-input"
                   />
                 ) : (
-                  <div className="info-display">
-                    <Mail className="info-icon" />
-                    <span>{profileData.email}</span>
-                  </div>
+                  <span className="field-value">{profileData.email}</span>
                 )}
               </div>
 
-              <div className="form-group">
-                <label>رقم الهاتف</label>
+              <div className="profile-field">
+                <div className="field-label">
+                  <Phone className="field-icon" />
+                  <span>رقم الهاتف</span>
+                </div>
                 {isEditing ? (
                   <input
                     type="tel"
                     value={editData.phone}
-                    onChange={(e) => setEditData({...editData, phone: e.target.value})}
-                    className="form-input"
+                    onChange={(e) => setEditData({ ...editData, phone: e.target.value })}
+                    className="field-input"
                   />
                 ) : (
-                  <div className="info-display">
-                    <Phone className="info-icon" />
-                    <span>{profileData.phone}</span>
-                  </div>
+                  <span className="field-value">{profileData.phone}</span>
                 )}
               </div>
 
-              <div className="form-group">
-                <label>العنوان</label>
+              <div className="profile-field">
+                <div className="field-label">
+                  <MapPin className="field-icon" />
+                  <span>العنوان</span>
+                </div>
                 {isEditing ? (
-                  <textarea
+                  <input
+                    type="text"
                     value={editData.address}
-                    onChange={(e) => setEditData({...editData, address: e.target.value})}
-                    className="form-textarea"
-                    rows="3"
+                    onChange={(e) => setEditData({ ...editData, address: e.target.value })}
+                    className="field-input"
                   />
                 ) : (
-                  <div className="info-display">
-                    <MapPin className="info-icon" />
-                    <span>{profileData.address}</span>
-                  </div>
+                  <span className="field-value">{profileData.address}</span>
                 )}
               </div>
 
-              <div className="form-group">
-                <label>تاريخ الميلاد</label>
+              <div className="profile-field">
+                <div className="field-label">
+                  <Calendar className="field-icon" />
+                  <span>تاريخ الميلاد</span>
+                </div>
                 {isEditing ? (
                   <input
                     type="date"
                     value={editData.birthDate}
-                    onChange={(e) => setEditData({...editData, birthDate: e.target.value})}
-                    className="form-input"
+                    onChange={(e) => setEditData({ ...editData, birthDate: e.target.value })}
+                    className="field-input"
                   />
                 ) : (
-                  <div className="info-display">
-                    <Calendar className="info-icon" />
-                    <span>{new Date(profileData.birthDate).toLocaleDateString('en-US')}</span>
-                  </div>
+                  <span className="field-value">{profileData.birthDate}</span>
                 )}
               </div>
-
-              {isEditing && (
-                <div className="form-actions">
-                  <button className="save-btn" onClick={handleSave}>
-                    <Save className="save-icon" />
-                    حفظ التغييرات
-                  </button>
-                  <button className="cancel-btn" onClick={handleCancel}>
-                    <X className="cancel-icon" />
-                    إلغاء
-                  </button>
-                </div>
-              )}
             </div>
+
+            {isEditing && (
+              <div className="edit-actions">
+                <button className="save-btn" onClick={handleSave}>
+                  <Save className="save-icon" />
+                  حفظ
+                </button>
+                <button className="cancel-btn" onClick={handleCancel}>
+                  <X className="cancel-icon" />
+                  إلغاء
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

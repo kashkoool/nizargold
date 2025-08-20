@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Heart, Eye, MessageCircle, ArrowLeft, Trash2, Share2, ShoppingBag, Sun, Moon } from 'lucide-react';
+import { apiCall } from '../../utils/api';
 import './styles/FavoritesPage.css';
 
 const INACTIVITY_TIMEOUT = 15 * 60 * 1000; // 15 minutes
