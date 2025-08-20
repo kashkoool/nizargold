@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { apiCall } from '../utils/api';
 import './Regesiter.css';
 
 const Regesiter = () => {
@@ -15,9 +16,8 @@ const Regesiter = () => {
     setSuccess('');
     setError('');
     try {
-      const res = await fetch('/api/users/register', {
+      const res = await apiCall('/api/users/register', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, email, password, role: 'customer' }),
       });
       const data = await res.json();

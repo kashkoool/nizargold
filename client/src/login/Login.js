@@ -3,6 +3,7 @@ import '../login/Login.css';
 import logo from '../logo.svg';
 import { FaExchangeAlt } from 'react-icons/fa';
 import { useNavigate, Link } from 'react-router-dom';
+import { apiCall } from '../utils/api';
 
 const CustomerIcon = ({ animating }) => (
   <svg className={`login-user-icon${animating ? ' icon-bounce' : ''}`} width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Customer Icon">
@@ -46,9 +47,8 @@ function Login() {
         ? { email: usernameOrEmail, password }
         : { username: usernameOrEmail, password };
       console.log('Sending login request to /api/users/login with payload:', payload);
-      const res = await fetch('/api/users/login', {
+      const res = await apiCall('/api/users/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
       console.log('Received response:', res);
