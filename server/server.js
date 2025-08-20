@@ -66,6 +66,11 @@ app.get('/', (req, res) => {
   res.status(404).send('Not Found');
 });
 
+// Health check endpoint for Railway
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
 // Test route for debugging
 app.get('/test', (req, res) => {
   res.json({ message: 'Backend Server is working!', timestamp: new Date().toISOString() });
