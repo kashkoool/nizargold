@@ -39,7 +39,9 @@ app.use(cors({
     'http://10.0.0.105:3002',
     // Add Railway domains here
     process.env.CLIENT_URL,
-    process.env.RAILWAY_STATIC_URL
+    process.env.RAILWAY_STATIC_URL,
+    // Add Vercel domain
+    'https://nizargold.vercel.app'
   ].filter(Boolean), // Remove undefined values
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
