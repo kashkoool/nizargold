@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Heart, User, Moon, Sun, Search, Eye } from 'lucide-react';
-import { apiCall } from '../../utils/api';
+import { apiCall, apiCallWithRefresh } from '../../utils/api';
+import { logout } from '../../utils/auth';
+import { getImageUrl } from '../../utils/imageUtils';
 import './styles/AllProductsPage.css';
 
 
@@ -69,12 +71,7 @@ const AllProductsPage = () => {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const response = await apiCall('/api/products?limit=1000', {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
+      const response = await apiCallWithRefresh('/api/products?limit=1000');
       
       if (response.ok) {
         const data = await response.json();
@@ -96,7 +93,6 @@ const AllProductsPage = () => {
         setError('Failed to fetch products');
       }
     } catch (error) {
-      console.error('Error fetching products:', error);
       setError('Error fetching products');
     } finally {
       setLoading(false);
@@ -105,20 +101,14 @@ const AllProductsPage = () => {
 
   const fetchFavoritesCount = async () => {
     try {
-      const response = await apiCall('/api/products/favorites/count', {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
+      const response = await apiCallWithRefresh('/api/products/favorites/count');
       
       if (response.ok) {
         const data = await response.json();
         setFavoriteCount(data.count || 0);
       }
     } catch (error) {
-      console.error('Error fetching favorites count:', error);
-    }
+      }
   };
 
   // Filter products based on search
@@ -155,11 +145,8 @@ const AllProductsPage = () => {
     setLikeLoading(prev => ({ ...prev, [productId]: true }));
     
     try {
-      const response = await apiCall(`/api/products/${productId}/like`, {
+      const response = await apiCallWithRefresh(`/api/products/${productId}/like`, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
       });
       
       if (response.ok) {
@@ -180,16 +167,13 @@ const AllProductsPage = () => {
         setFavoriteCount(prev => prev + (products.find(p => p._id === productId)?.liked ? -1 : 1));
       }
     } catch (error) {
-      console.error('Error toggling like:', error);
-    } finally {
+      } finally {
       setLikeLoading(prev => ({ ...prev, [productId]: false }));
     }
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/');
+    logout(navigate);
   };
 
   // Pagination functions
@@ -369,7 +353,7 @@ const AllProductsPage = () => {
               <div key={product._id} className="product-card">
                 <div className="product-image-container">
                   <img 
-                    src={product.images && product.images.length > 0 ? product.images[0] : 'https://via.placeholder.com/300x300?text=Product'} 
+                    src={getImageUrl(product.images, 0)} 
                     alt={product.name} 
                     className="product-image" 
                   />

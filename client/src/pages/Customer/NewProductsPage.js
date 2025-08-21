@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Heart, User, Moon, Sun, Search, ShoppingCart } from 'lucide-react';
-import { apiCall } from '../../utils/api';
+import { apiCall, apiCallWithRefresh } from '../../utils/api';
+import { logout } from '../../utils/auth';
+import { getImageUrl } from '../../utils/imageUtils';
 import './styles/NewProductsPage.css';
 
 const NewProductsPage = () => {
@@ -48,12 +50,7 @@ const NewProductsPage = () => {
     const fetchNewProducts = async () => {
       try {
         setLoading(true);
-        const response = await apiCall('/api/products?limit=1000', {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        });
+        const response = await apiCallWithRefresh('/api/products?limit=1000');
         
         if (response.ok) {
           const data = await response.json();
@@ -69,23 +66,17 @@ const NewProductsPage = () => {
           const currentDate = new Date();
           currentDate.setHours(23, 59, 59, 999); // نهاية اليوم الحالي
           
-          console.log('All products fetched:', allProducts.length);
-          console.log('Date range:', sevenDaysAgo.toLocaleDateString('en-US'), 'to', currentDate.toLocaleDateString('en-US'));
-          
           const newProducts = allProducts.filter(product => {
             if (!product.createdAt) {
-              console.log(`Product ${product.name} has no createdAt field`);
               return false;
             }
             
             const productDate = new Date(product.createdAt);
             if (isNaN(productDate.getTime())) {
-              console.log(`Product ${product.name} has invalid createdAt: ${product.createdAt}`);
               return false;
             }
             
             const isInRange = productDate >= sevenDaysAgo && productDate <= currentDate;
-            console.log(`Product: ${product.name}, Date: ${productDate.toLocaleDateString('en-US')}, In Range: ${isInRange}`);
             return isInRange;
           });
           
@@ -94,19 +85,10 @@ const NewProductsPage = () => {
             new Date(b.createdAt) - new Date(a.createdAt)
           );
           
-          console.log('Products added in last 7 days:', sortedProducts.length);
-          console.log('Filtered products:', sortedProducts.map(p => ({ name: p.name, createdAt: p.createdAt })));
-          
           // إضافة معلومات تشخيص إضافية
           if (sortedProducts.length === 0) {
-            console.log('No products found in last 7 days. Checking all products...');
             allProducts.forEach((product, index) => {
-              console.log(`Product ${index + 1}:`, {
-                name: product.name,
-                createdAt: product.createdAt,
-                date: new Date(product.createdAt).toLocaleDateString('en-US'),
-                daysAgo: Math.ceil((new Date() - new Date(product.createdAt)) / (1000 * 60 * 60 * 24))
-              });
+              console.log(`Product ${index}: ${product.name}, Date: ${new Date(product.createdAt).toLocaleDateString('en-US')}, daysAgo: ${Math.ceil((new Date() - new Date(product.createdAt)) / (1000 * 60 * 60 * 24))}`);
             });
           }
           
@@ -121,7 +103,6 @@ const NewProductsPage = () => {
           setFilteredProducts(productsWithLiked);
         }
       } catch (error) {
-        console.error('Error fetching new products:', error);
         setProducts([]);
         setFilteredProducts([]);
       } finally {
@@ -152,7 +133,6 @@ const NewProductsPage = () => {
         setFilteredProducts(products);
       }
     } catch (error) {
-      console.error('Error in search functionality:', error);
       setFilteredProducts(products);
     }
   }, [searchQuery, products]);
@@ -161,28 +141,20 @@ const NewProductsPage = () => {
   useEffect(() => {
     const fetchFavoriteCount = async () => {
       try {
-        const response = await apiCall('/api/products/favorites/count', {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        });
+        const response = await apiCallWithRefresh('/api/products/favorites/count');
         if (response.ok) {
           const data = await response.json();
           setFavoriteCount(data.count || 0);
         }
       } catch (error) {
-        console.error('Error fetching favorite count:', error);
-      }
+        }
     };
 
     fetchFavoriteCount();
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/');
+    logout(navigate);
   };
 
   const getProductCategory = (productName) => {
@@ -220,11 +192,8 @@ const NewProductsPage = () => {
   const handleLike = async (productId) => {
     setLikeLoading(prev => ({ ...prev, [productId]: true }));
     try {
-      const response = await apiCall(`/api/products/${productId}/like`, {
+      const response = await apiCallWithRefresh(`/api/products/${productId}/like`, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
       });
       
       if (response.ok) {
@@ -249,8 +218,7 @@ const NewProductsPage = () => {
         }
       }
     } catch (error) {
-      console.error('Error liking product:', error);
-    } finally {
+      } finally {
       setLikeLoading(prev => ({ ...prev, [productId]: false }));
     }
   };
@@ -272,19 +240,13 @@ const NewProductsPage = () => {
   const fetchComments = async (productId) => {
     setCommentsLoading(true);
     try {
-      const response = await apiCall(`/api/comments?product=${productId}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
+      const response = await apiCallWithRefresh(`/api/comments?product=${productId}`);
       if (response.ok) {
         const data = await response.json();
         setComments(data);
       }
     } catch (error) {
-      console.error('Error fetching comments:', error);
-    }
+      }
     setCommentsLoading(false);
   };
 
@@ -292,11 +254,8 @@ const NewProductsPage = () => {
     e.preventDefault();
     if (!commentText.trim()) return;
     try {
-      const response = await apiCall('/api/comments', {
+      const response = await apiCallWithRefresh('/api/comments', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
         body: JSON.stringify({ product: commentModal.product._id, content: commentText })
       });
       if (response.ok) {
@@ -305,8 +264,7 @@ const NewProductsPage = () => {
         else closeCommentModal();
       }
     } catch (error) {
-      console.error('Error adding comment:', error);
-    }
+      }
   };
 
   // Handle view product (same as dashboard)
@@ -492,7 +450,7 @@ const NewProductsPage = () => {
               <div key={product._id} className="product-card">
                 <div className="product-image-container">
                   <img 
-                    src={product.images && product.images.length > 0 ? product.images[0] : 'https://via.placeholder.com/300x300?text=Product'} 
+                    src={getImageUrl(product.images, 0)} 
                     alt={product.name} 
                     className="product-image" 
                   />
@@ -698,7 +656,7 @@ const NewProductsPage = () => {
               <div className="product-images-section">
                 {viewProduct.images && viewProduct.images.length > 0 ? (
                   <img
-                    src={viewProduct.images[imageIndexes[viewProduct._id] || 0]}
+                    src={getImageUrl(viewProduct.images, imageIndexes[viewProduct._id] || 0)}
                     alt={viewProduct.name}
                     className="main-product-image"
                     onClick={() => setLightbox({ open: true, images: viewProduct.images, index: imageIndexes[viewProduct._id] || 0 })}
@@ -715,7 +673,7 @@ const NewProductsPage = () => {
                     {viewProduct.images.map((image, index) => (
                       <img
                         key={index}
-                        src={image}
+                        src={getImageUrl(viewProduct.images, index)}
                         alt={`${viewProduct.name} ${index + 1}`}
                         className={`thumbnail-image ${(imageIndexes[viewProduct._id] || 0) === index ? 'active' : ''}`}
                         onClick={() => setImageIndexes(prev => ({ ...prev, [viewProduct._id]: index }))}

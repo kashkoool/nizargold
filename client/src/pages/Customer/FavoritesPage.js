@@ -1,39 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Heart, Eye, MessageCircle, ArrowLeft, Trash2, Share2, ShoppingBag, Sun, Moon } from 'lucide-react';
-import { apiCall } from '../../utils/api';
+import { apiCall, apiCallWithRefresh } from '../../utils/api';
+import { logout, useAutoLogout } from '../../utils/auth';
+import { getImageUrl } from '../../utils/imageUtils';
 import './styles/FavoritesPage.css';
 
 const INACTIVITY_TIMEOUT = 15 * 60 * 1000; // 15 minutes
 
-function useAutoLogout() {
-  const timer = useRef();
-  useEffect(() => {
-    const resetTimer = () => {
-      clearTimeout(timer.current);
-      timer.current = setTimeout(() => {
-        localStorage.removeItem('user');
-        localStorage.removeItem('token');
-        window.location.href = '/login';
-      }, INACTIVITY_TIMEOUT);
-    };
-    window.addEventListener('mousemove', resetTimer);
-    window.addEventListener('keydown', resetTimer);
-    window.addEventListener('mousedown', resetTimer);
-    window.addEventListener('touchstart', resetTimer);
-    resetTimer();
-    return () => {
-      clearTimeout(timer.current);
-      window.removeEventListener('mousemove', resetTimer);
-      window.removeEventListener('keydown', resetTimer);
-      window.removeEventListener('mousedown', resetTimer);
-      window.removeEventListener('touchstart', resetTimer);
-    };
-  }, []);
-}
-
 const FavoritesPage = () => {
-  useAutoLogout();
+  useAutoLogout(INACTIVITY_TIMEOUT);
   
   // Theme state
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -72,51 +48,24 @@ const FavoritesPage = () => {
 
   // Helper: fetch with auto-refresh on 401
   async function fetchWithRefresh(url, options = {}, retry = true) {
-    let res = await apiCall(url, options);
-    if (res.status === 401 && retry) {
-      // Try to refresh the access token
-      const refreshRes = await apiCall('/api/users/refresh', { method: 'POST', credentials: 'include' });
-      if (refreshRes.ok) {
-        // Retry the original request
-        res = await apiCall(url, options);
-      } else {
-        // Refresh failed, force logout
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        navigate('/login');
-      }
-    }
-    return res;
+    return await apiCallWithRefresh(url, options);
   }
 
   // Fetch favorite products
   useEffect(() => {
     const fetchFavoriteProducts = async () => {
       setLoading(true);
-      try {
-        console.log('🔍 Fetching favorite products...');
-        console.log('Token:', localStorage.getItem('token') ? 'Present' : 'Missing');
-        
-        const res = await fetchWithRefresh('/api/products/favorites/user', {
-          headers: {
-            'Authorization': localStorage.getItem('token') ? `Bearer ${localStorage.getItem('token')}` : '',
-          },
-        });
-        
-        console.log('📡 Response status:', res.status);
-        console.log('📡 Response ok:', res.ok);
+            try {
+        const res = await fetchWithRefresh('/api/products/favorites/user');
         
         if (res.ok) {
           const data = await res.json();
-          console.log('📦 Favorite products data:', data);
           setFavoriteProducts(data.products || []);
         } else {
           const errorText = await res.text();
-          console.error('❌ Failed to fetch favorite products:', res.status, errorText);
-        }
+          }
       } catch (error) {
-        console.error('💥 Error fetching favorite products:', error);
-      }
+        }
       setLoading(false);
     };
     fetchFavoriteProducts();
@@ -144,13 +93,8 @@ const FavoritesPage = () => {
   const handleLike = async (productId) => {
     setLikeLoading(prev => ({ ...prev, [productId]: true }));
     try {
-      const token = localStorage.getItem('token');
       const res = await fetchWithRefresh(`/api/products/${productId}/like`, {
         method: 'POST',
-        headers: {
-          'Authorization': token ? `Bearer ${token}` : '',
-          'Content-Type': 'application/json',
-        },
       });
       if (res.ok) {
         const data = await res.json();
@@ -164,8 +108,7 @@ const FavoritesPage = () => {
         }
       }
     } catch (error) {
-      console.error('Error toggling like:', error);
-    }
+      }
     setLikeLoading(prev => ({ ...prev, [productId]: false }));
   };
 
@@ -192,8 +135,7 @@ const FavoritesPage = () => {
       }
       setShowClearAllConfirm(false);
     } catch (error) {
-      console.error('Error clearing all favorites:', error);
-    }
+      }
   };
 
   const openCommentModal = (product, view = false) => {
@@ -212,18 +154,13 @@ const FavoritesPage = () => {
   const fetchComments = async (productId) => {
     setCommentsLoading(true);
     try {
-      const res = await fetchWithRefresh(`/api/comments/${productId}`, {
-        headers: {
-          'Authorization': localStorage.getItem('token') ? `Bearer ${localStorage.getItem('token')}` : '',
-        },
-      });
+      const res = await fetchWithRefresh(`/api/comments?product=${productId}`);
       if (res.ok) {
         const data = await res.json();
-        setComments(data.comments || []);
+        setComments(data || []);
       }
     } catch (error) {
-      console.error('Error fetching comments:', error);
-    }
+      }
     setCommentsLoading(false);
   };
 
@@ -232,21 +169,23 @@ const FavoritesPage = () => {
     if (!commentText.trim()) return;
 
     try {
-      const res = await fetchWithRefresh(`/api/comments/${commentModal.product._id}`, {
+      const res = await fetchWithRefresh('/api/comments', {
         method: 'POST',
-        headers: {
-          'Authorization': localStorage.getItem('token') ? `Bearer ${localStorage.getItem('token')}` : '',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ content: commentText }),
+        body: JSON.stringify({ 
+          product: commentModal.product._id, 
+          content: commentText 
+        }),
       });
       if (res.ok) {
         setCommentText('');
         fetchComments(commentModal.product._id);
       }
     } catch (error) {
-      console.error('Error adding comment:', error);
-    }
+      }
+  };
+
+  const handleLogout = () => {
+    logout(navigate);
   };
 
   if (loading) {
@@ -282,13 +221,23 @@ const FavoritesPage = () => {
             <p className="favorites-subtitle">مجموعة منتجاتك المفضلة المختارة بعناية</p>
           </div>
           
-          <button 
-            className="favorites-theme-toggle-button"
-            onClick={toggleTheme}
-            title={isDarkMode ? 'التبديل إلى الوضع الفاتح' : 'التبديل إلى الوضع الداكن'}
-          >
-            {isDarkMode ? <Sun className="favorites-theme-icon" /> : <Moon className="favorites-theme-icon" />}
-          </button>
+          <div className="header-actions">
+            <button 
+              className="favorites-theme-toggle-button"
+              onClick={toggleTheme}
+              title={isDarkMode ? 'التبديل إلى الوضع الفاتح' : 'التبديل إلى الوضع الداكن'}
+            >
+              {isDarkMode ? <Sun className="favorites-theme-icon" /> : <Moon className="favorites-theme-icon" />}
+            </button>
+            
+            <button 
+              className="logout-btn"
+              onClick={handleLogout}
+              title="تسجيل الخروج"
+            >
+              تسجيل الخروج
+            </button>
+          </div>
         </div>
       </div>
 
@@ -355,7 +304,7 @@ const FavoritesPage = () => {
             {favoriteProducts.map(product => {
               const id = product._id || product.id;
               const currentImageIndex = imageIndexes[id] || 0;
-              const currentImage = product.images && product.images[currentImageIndex];
+              const currentImage = getImageUrl(product.images, currentImageIndex);
 
               return (
                 <div key={id} className="favorite-card">
@@ -370,7 +319,7 @@ const FavoritesPage = () => {
 
                   {/* Product Image */}
                   <div className="image-container">
-                    {currentImage ? (
+                    {currentImage && currentImage !== 'https://via.placeholder.com/300x300?text=Product' ? (
                       <img
                         src={currentImage}
                         alt={product.name}

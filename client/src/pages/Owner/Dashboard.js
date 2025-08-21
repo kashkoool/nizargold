@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Store, Users, Plus, Search, Filter, DollarSign, BarChart3, X, Package, Star, Gem, Crown } from 'lucide-react';
-import { apiCall } from '../../utils/api';
+import { apiCall, apiCallWithRefresh } from '../../utils/api';
+import { getImageUrl } from '../../utils/imageUtils';
 import Navbar from './Navbar';
 import ProductForm from './ProductForm';
 import ProductList from './ProductList';
@@ -129,12 +130,7 @@ function Dashboard() {
   useEffect(() => {
     const fetchProducts = async (pageNum = 1) => {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      const res = await fetchWithRefresh(`/api/products?page=${pageNum}&limit=10`, {
-        headers: {
-          'Authorization': token ? `Bearer ${token}` : '',
-        },
-      });
+      const res = await fetchWithRefresh(`/api/products?page=${pageNum}&limit=10`);
       if (res.ok) {
         let data = await res.json();
         const products = data.products.map(p => ({
@@ -223,19 +219,18 @@ function Dashboard() {
 
   const addProduct = async (product, isFormData = false) => {
     try {
-      const token = localStorage.getItem('token');
       let options = {
         method: 'POST',
-        headers: {
-          'Authorization': token ? `Bearer ${token}` : '',
-        },
         body: product,
       };
 
       if (!isFormData) {
-        options.headers['Content-Type'] = 'application/json';
+        options.headers = { 'Content-Type': 'application/json' };
         options.body = JSON.stringify(product);
-      }
+        } else {
+        // For FormData, don't set Content-Type - let the browser set it automatically
+        // This ensures it's set to multipart/form-data with the correct boundary
+        }
 
       const res = await fetchWithRefresh('/api/products', options);
       if (!res.ok) {
@@ -253,24 +248,39 @@ function Dashboard() {
 
   const updateProduct = async (product, isFormData = false) => {
     try {
-      const token = localStorage.getItem('token');
-      const id = product.id || product._id;
+      // Get the ID from the editingProduct (the original product being edited)
+      const id = editingProduct?._id || editingProduct?.id;
+      
+      if (!id) {
+        alert('خطأ: لم يتم العثور على معرف المنتج');
+        return;
+      }
+
       let options = {
         method: 'PUT',
-        headers: {
-          'Authorization': token ? `Bearer ${token}` : '',
-        },
         body: product,
       };
 
       if (!isFormData) {
-        options.headers['Content-Type'] = 'application/json';
+        options.headers = { 'Content-Type': 'application/json' };
         options.body = JSON.stringify(product);
-      }
+        } else {
+        // For FormData, don't set Content-Type - let the browser set it automatically
+        // This ensures it's set to multipart/form-data with the correct boundary
+        }
 
       const res = await fetchWithRefresh(`/api/products/${id}`, options);
+      
       if (!res.ok) {
-        const errorData = await res.json();
+        let errorData;
+        try {
+          errorData = await res.json();
+        } catch (parseError) {
+          // If response is not JSON (like HTML error page), get text
+          const errorText = await res.text();
+          alert('فشل تحديث المنتج - خطأ في الخادم');
+          return;
+        }
         alert(errorData.message || 'فشل تحديث المنتج');
         return;
       }
@@ -285,19 +295,14 @@ function Dashboard() {
 
   // Instead of calling deleteProduct directly, open modal
   const handleDeleteClick = (product) => {
-    console.log('DEBUG: handleDeleteClick product:', product);
     setProductToDelete(product);
     setShowDeleteModal(true);
   };
 
   const deleteProduct = async (id) => {
     try {
-      const token = localStorage.getItem('token');
       const res = await fetchWithRefresh(`/api/products/${id}`, {
         method: 'DELETE',
-        headers: {
-          'Authorization': token ? `Bearer ${token}` : '',
-        },
       });
       if (!res.ok) {
         const errorData = await res.json();
@@ -312,13 +317,13 @@ function Dashboard() {
 
   const togglePin = async (id) => {
     try {
-      const token = localStorage.getItem('token');
       const res = await fetchWithRefresh(`/api/products/${id}/pin`, {
-        method: 'PATCH',
+        method: 'PUT',
         headers: {
-          'Authorization': token ? `Bearer ${token}` : '',
-        },
+          'Content-Type': 'application/json'
+        }
       });
+      
       if (res.ok) {
         const data = await res.json();
         setProducts(prev => {
@@ -362,12 +367,7 @@ function Dashboard() {
 
   const fetchProducts = async (pageNum) => {
     setLoading(true);
-    const token = localStorage.getItem('token');
-    const res = await fetchWithRefresh(`/api/products?page=${pageNum}&limit=10`, {
-      headers: {
-        'Authorization': token ? `Bearer ${token}` : '',
-      },
-    });
+    const res = await fetchWithRefresh(`/api/products?page=${pageNum}&limit=10`);
     if (res.ok) {
       let data = await res.json();
       const products = data.products.map(p => ({
@@ -391,21 +391,7 @@ function Dashboard() {
 
   // Helper: fetch with auto-refresh on 401
   async function fetchWithRefresh(url, options = {}, retry = true) {
-    let res = await apiCall(url, options);
-    if (res.status === 401 && retry) {
-      // Try to refresh the access token
-      const refreshRes = await apiCall('/api/users/refresh', { method: 'POST', credentials: 'include' });
-      if (refreshRes.ok) {
-        // Retry the original request
-        res = await apiCall(url, options);
-      } else {
-        // Refresh failed, force logout
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        navigate('/login');
-      }
-    }
-    return res;
+    return await apiCallWithRefresh(url, options);
   }
 
   return (
@@ -725,7 +711,6 @@ function Dashboard() {
                   id: product._id || product.id || product.ID,
                   _id: product._id || product.id || product.ID,
                 };
-                console.log('DEBUG onEdit fullProduct:', fullProduct);
                 setEditingProduct(fullProduct);
                 setShowForm(true);
               }}
@@ -806,7 +791,6 @@ function Dashboard() {
                 className="action-button danger"
                 onClick={async () => {
                   const id = getProductId(productToDelete);
-                  console.log('DEBUG: Modal delete button productToDelete:', productToDelete, 'Resolved id:', id);
                   if (!id) {
                     alert('تعذر العثور على معرف المنتج');
                     setShowDeleteModal(false);
@@ -898,7 +882,7 @@ function Dashboard() {
                 {/* Main Image */}
                 {viewProduct.images && viewProduct.images.length > 0 ? (
                   <img
-                    src={viewProduct.images[0]}
+                    src={getImageUrl(viewProduct.images, 0)}
                     alt={viewProduct.name}
                     className="product-modal-image"
                     onClick={() => setLightbox({ open: true, images: viewProduct.images, index: 0 })}
@@ -915,7 +899,7 @@ function Dashboard() {
                     {viewProduct.images.map((img, idx) => (
                       <img
                         key={idx}
-                        src={img}
+                        src={getImageUrl(viewProduct.images, idx)}
                         alt={`صورة ${idx + 1}`}
                         className="thumbnail-image"
                         onClick={() => setLightbox({ open: true, images: viewProduct.images, index: idx })}
@@ -1144,7 +1128,7 @@ function Dashboard() {
             &#8592;
           </button>
           <img
-            src={lightbox.images[lightbox.index]}
+            src={getImageUrl(lightbox.images, lightbox.index)}
             alt={`صورة ${lightbox.index + 1}`}
             className="max-h-[80vh] max-w-[90vw] rounded-lg border-4 border-silver-gray"
             style={{ zIndex: 52, borderColor: '#B0B0B0', boxShadow: '0 4px 20px rgba(176, 176, 176, 0.3)' }}

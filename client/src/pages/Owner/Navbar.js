@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { LogOut, ChevronDown, Gem, Package, Sun, Moon } from 'lucide-react';
+import { apiCall } from '../../utils/api';
+import { logout } from '../../utils/auth';
 import './styles/Navbar.css';
 
 const productTypes = [
@@ -55,9 +57,7 @@ const Navbar = ({ onAddProduct }) => {
 
   // Logout handler
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    window.location.href = '/';
+    logout(); // No navigate function needed, uses window.location.href
   };
 
   // دالة لإخفاء أيقونات الفلترة

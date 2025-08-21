@@ -11,33 +11,14 @@ exports.getProductsStatistics = async (req, res) => {
       .populate('likes', 'username')
       .lean();
 
-    console.log(`Found ${products.length} products for owner ${ownerId}`);
-    console.log('Products:', products.map(p => ({ id: p._id, name: p.name, likes: p.likes?.length || 0 })));
-
     // Debug: Check if there are any likes at all
     const allLikes = products.reduce((sum, product) => sum + (product.likes?.length || 0), 0);
-    console.log(`Total likes across all products: ${allLikes}`);
-
     // Debug: Check all products in the database
     const allProductsInDB = await Product.find({}).populate('likes', 'username').populate('owner', 'username');
-    console.log('All products in database:', allProductsInDB.map(p => ({ 
-      name: p.name, 
-      owner: p.owner?.username || 'Unknown',
-      likes: p.likes?.length || 0,
-      material: p.material
-    })));
-
     // Debug: Check if there are any comments at all
     const allComments = await Comment.countDocuments({ product: { $in: products.map(p => p._id) } });
-    console.log(`Total comments across all products: ${allComments}`);
-
     // Debug: Check all comments in the database
     const allCommentsInDB = await Comment.find({}).populate('product', 'name').populate('user', 'username');
-    console.log('All comments in database:', allCommentsInDB.map(c => ({ 
-      product: c.product?.name || 'Unknown', 
-      user: c.user?.username || 'Unknown',
-      content: c.content.substring(0, 50) + '...'
-    })));
 
     // Get comments count for each product
     const commentsCount = await Comment.aggregate([
@@ -59,9 +40,6 @@ exports.getProductsStatistics = async (req, res) => {
     commentsCount.forEach(item => {
       commentsMap[item._id.toString()] = item.count;
     });
-
-    console.log(`Found comments for ${commentsCount.length} products`);
-    console.log('Comments map:', commentsMap);
 
     // Add comments count to products
     const productsWithComments = products.map(product => ({
@@ -85,8 +63,6 @@ exports.getProductsStatistics = async (req, res) => {
         createdAt: product.createdAt
       }));
 
-    console.log('Most liked products:', mostLikedProducts.map(p => ({ name: p.name, likes: p.likes, comments: p.commentsCount })));
-
     // Get most commented products (top 5)
     const mostCommentedProducts = [...productsWithComments]
       .sort((a, b) => b.commentsCount - a.commentsCount)
@@ -103,19 +79,11 @@ exports.getProductsStatistics = async (req, res) => {
         createdAt: product.createdAt
       }));
 
-    console.log('Most commented products:', mostCommentedProducts.map(p => ({ name: p.name, likes: p.likes, comments: p.commentsCount })));
-
     // Get overall statistics
     const totalProducts = products.length;
     const totalLikes = products.reduce((sum, product) => sum + (product.likes?.length || 0), 0);
     const totalComments = productsWithComments.reduce((sum, product) => sum + product.commentsCount, 0);
     const pinnedProducts = products.filter(p => p.pinned).length;
-
-    console.log('Overall stats calculation:');
-    console.log('- Total products:', totalProducts);
-    console.log('- Total likes:', totalLikes);
-    console.log('- Total comments:', totalComments);
-    console.log('- Pinned products:', pinnedProducts);
 
     // Get material distribution
     const materialStats = products.reduce((acc, product) => {
@@ -159,11 +127,9 @@ exports.getProductsStatistics = async (req, res) => {
       materialStats: materialStats || {}
     };
 
-    console.log('Sending statistics response:', response);
     res.json(response);
 
   } catch (err) {
-    console.error('Error getting products statistics:', err);
     res.status(500).json({ message: err.message });
   }
 };
@@ -222,7 +188,6 @@ exports.getProductDetailedStats = async (req, res) => {
     });
 
   } catch (err) {
-    console.error('Error getting product detailed stats:', err);
     res.status(500).json({ message: err.message });
   }
 }; 

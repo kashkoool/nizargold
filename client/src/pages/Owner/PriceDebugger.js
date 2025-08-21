@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Bug, RefreshCw, Eye, X } from 'lucide-react';
-import { apiCall } from '../../utils/api';
+import { apiCall, apiCallWithRefresh } from '../../utils/api';
 import './styles/PriceDebugger.css';
 
 const PriceDebugger = ({ onBack }) => {
@@ -17,12 +17,7 @@ const PriceDebugger = ({ onBack }) => {
       setLoading(true);
       
       // Fetch material prices
-      const pricesRes = await apiCall('/api/material-prices', {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
+      const pricesRes = await apiCallWithRefresh('/api/material-prices');
       
       if (pricesRes.ok) {
         const pricesData = await pricesRes.json();
@@ -30,20 +25,14 @@ const PriceDebugger = ({ onBack }) => {
       }
 
       // Fetch products
-      const productsRes = await apiCall('/api/products', {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
+      const productsRes = await apiCallWithRefresh('/api/products');
       
       if (productsRes.ok) {
         const productsData = await productsRes.json();
         setProducts(productsData.products || []);
       }
     } catch (error) {
-      console.error('Error fetching data:', error);
-    } finally {
+      } finally {
       setLoading(false);
     }
   };

@@ -1,70 +1,115 @@
-# Getting Started with Create React App
+# FNizar - Client Application
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## 🏪 About FNizar
 
-## Available Scripts
+FNizar is a jewelry management system with separate interfaces for store owners and customers. This is the React frontend application.
 
-In the project directory, you can run:
+## 🚀 Quick Start
 
-### `npm start`
+### Prerequisites
+- Node.js (v14 or higher)
+- npm or yarn
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Installation
+```bash
+# Install dependencies
+npm install
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+# Set up environment variables
+cp env.example .env
+# Edit .env with your actual values
 
-### `npm test`
+# Start development server
+npm start
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Available Scripts
 
-### `npm run build`
+- `npm start` - Start development server
+- `npm run build` - Build for production
+- `npm test` - Run tests
+- `npm run eject` - Eject from Create React App
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 📁 Project Structure
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```
+client/
+├── public/          # Static assets
+├── src/
+│   ├── components/  # Reusable components
+│   ├── pages/       # Page components
+│   │   ├── Customer/ # Customer-facing pages
+│   │   └── Owner/    # Owner/admin pages
+│   ├── utils/       # Utility functions
+│   └── styles/      # CSS files
+├── .env.example     # Environment variables template
+└── package.json     # Dependencies and scripts
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## 🔧 Environment Variables
 
-### `npm run eject`
+Copy `env.example` to `.env` and configure:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+```env
+REACT_APP_API_URL=http://localhost:5001
+REACT_APP_BACKEND_URL=http://localhost:5001
+REACT_APP_ENV=development
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## 🎨 Features
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+- **Dark/Light Theme** - Toggle between themes
+- **Responsive Design** - Works on all devices
+- **Arabic RTL Support** - Full right-to-left layout
+- **Image Management** - Product image upload and display
+- **Real-time Updates** - Live product updates
+- **Search & Filter** - Advanced product search
+- **Pagination** - Efficient data loading
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## 🔒 Security
 
-## Learn More
+- Environment variables for sensitive data
+- JWT authentication
+- CORS protection
+- Input sanitization
+- Secure image handling
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## 📱 User Interfaces
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Customer Interface
+- Product browsing
+- Search and filtering
+- Favorites management
+- Product details
+- Comments system
 
-### Code Splitting
+### Owner Interface
+- Product management
+- Inventory control
+- Price management
+- Statistics dashboard
+- User management
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## 🚀 Deployment
 
-### Analyzing the Bundle Size
+### Vercel (Recommended)
+1. Connect your GitHub repository
+2. Set environment variables in Vercel dashboard
+3. Deploy automatically on push
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+### Railway
+1. Connect your repository
+2. Set environment variables
+3. Deploy with Railway CLI
 
-### Making a Progressive Web App
+## 🤝 Contributing
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
 
-### Advanced Configuration
+## 📄 License
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+This project is part of the FNizar jewelry management system.

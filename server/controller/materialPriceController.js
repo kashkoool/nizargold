@@ -7,16 +7,10 @@ exports.getMaterialPrices = async (req, res) => {
     const prices = await MaterialPrice.find().sort({ material: 1 });
     
     // Log the current material prices
-    console.log(`📊 Current material prices:`);
     prices.forEach(price => {
       if (price.material === 'ذهب') {
-        console.log(`   ${price.material}:`);
-        console.log(`     عيار 18: USD ${price.goldKaratPrices['18']?.usd || 0}, SYP ${price.goldKaratPrices['18']?.syp || 0}`);
-        console.log(`     عيار 21: USD ${price.goldKaratPrices['21']?.usd || 0}, SYP ${price.goldKaratPrices['21']?.syp || 0}`);
-        console.log(`     عيار 24: USD ${price.goldKaratPrices['24']?.usd || 0}, SYP ${price.goldKaratPrices['24']?.syp || 0}`);
-      } else {
-        console.log(`   ${price.material}: USD ${price.pricePerGram.usd}, SYP ${price.pricePerGram.syp}`);
-      }
+        } else {
+        }
     });
     
     res.json(prices);
@@ -101,12 +95,7 @@ exports.updateMaterialPrice = async (req, res) => {
         syp: updateData.goldKaratPrices['21'].syp
       };
 
-      console.log(`💰 Updated Gold prices:`);
-      console.log(`   عيار 18: USD ${updateData.goldKaratPrices['18'].usd}, SYP ${updateData.goldKaratPrices['18'].syp}`);
-      console.log(`   عيار 21: USD ${updateData.goldKaratPrices['21'].usd}, SYP ${updateData.goldKaratPrices['21'].syp}`);
-      console.log(`   عيار 24: USD ${updateData.goldKaratPrices['24'].usd}, SYP ${updateData.goldKaratPrices['24'].syp}`);
-
-    } else {
+      } else {
       // للفضة والألماس، نستخدم السعر العادي
       if (!pricePerGram || !pricePerGram.usd || !pricePerGram.syp) {
         return res.status(400).json({ 
@@ -116,10 +105,7 @@ exports.updateMaterialPrice = async (req, res) => {
 
       updateData.pricePerGram = pricePerGram;
 
-      console.log(`💰 Updated ${material} prices:`);
-      console.log(`   USD: ${pricePerGram.usd}`);
-      console.log(`   SYP: ${pricePerGram.syp}`);
-    }
+      }
 
     // Update or create material price
     const materialPrice = await MaterialPrice.findOneAndUpdate(
@@ -213,17 +199,6 @@ exports.updateAllProductPrices = async (req, res) => {
       const totalPriceSYP = (newGramPriceSYP + craftingFeeSYP) * product.weight;
       
       // Log the calculation for debugging
-      console.log(`🔍 Product: ${product.name} (${material} - عيار ${product.karat})`);
-      console.log(`   Weight: ${product.weight}g`);
-      console.log(`   Material Price USD: ${newGramPriceUSD}`);
-      console.log(`   Material Price SYP: ${newGramPriceSYP}`);
-      console.log(`   Crafting Fee USD: ${craftingFeeUSD}`);
-      console.log(`   Crafting Fee SYP: ${craftingFeeSYP}`);
-      console.log(`   Formula: (${newGramPriceUSD} + ${craftingFeeUSD}) × ${product.weight} = ${totalPriceUSD} USD`);
-      console.log(`   Formula: (${newGramPriceSYP} + ${craftingFeeSYP}) × ${product.weight} = ${totalPriceSYP} SYP`);
-      console.log(`   Total Price USD: ${totalPriceUSD}`);
-      console.log(`   Total Price SYP: ${totalPriceSYP}`);
-      
       // Update product prices
       product.gramPrice = {
         usd: newGramPriceUSD,

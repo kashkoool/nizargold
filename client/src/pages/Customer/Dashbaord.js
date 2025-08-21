@@ -3,7 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { Eye, Sun, Moon, Heart, ShoppingCart, User, Search, Menu, X, MessageCircle, Instagram, XCircle } from 'lucide-react';
 import './styles/Dashboard.css';
 import './styles/Common.css';
-import { apiCall } from '../../utils/api';
+import { apiCall, apiCallWithRefresh } from '../../utils/api';
+import { logout, useAutoLogout } from '../../utils/auth';
+import { getImageUrl } from '../../utils/imageUtils';
 
 
 const featuredTabs = [
@@ -23,35 +25,13 @@ const collections = [
 ];
 
 const INACTIVITY_TIMEOUT = 15 * 60 * 1000; // 15 minutes
-function useAutoLogout() {
-  const timer = useRef();
-  useEffect(() => {
-    const resetTimer = () => {
-      clearTimeout(timer.current);
-      timer.current = setTimeout(() => {
-        localStorage.removeItem('user');
-        localStorage.removeItem('token');
-        window.location.href = '/login';
-      }, INACTIVITY_TIMEOUT);
-    };
-    window.addEventListener('mousemove', resetTimer);
-    window.addEventListener('keydown', resetTimer);
-    window.addEventListener('mousedown', resetTimer);
-    window.addEventListener('touchstart', resetTimer);
-    resetTimer();
-    return () => {
-      clearTimeout(timer.current);
-      window.removeEventListener('mousemove', resetTimer);
-      window.removeEventListener('keydown', resetTimer);
-      window.removeEventListener('mousedown', resetTimer);
-      window.removeEventListener('touchstart', resetTimer);
-    };
-  }, []);
-}
 
 const Dashbaord = () => {
   const navigate = useNavigate();
-  useAutoLogout();
+  
+  // Debug logging removed for cleaner console
+  
+  useAutoLogout(INACTIVITY_TIMEOUT);
   
 
   const [activeTab, setActiveTab] = useState('NEW');
@@ -116,52 +96,49 @@ const Dashbaord = () => {
 
   // Helper: fetch with auto-refresh on 401
   async function fetchWithRefresh(url, options = {}, retry = true) {
-    let res = await apiCall(url, options);
-    if (res.status === 401 && retry) {
-      // Try to refresh the access token
-      const refreshRes = await apiCall('/api/users/refresh', { method: 'POST', credentials: 'include' });
-      if (refreshRes.ok) {
-        // Retry the original request
-        res = await apiCall(url, options);
-      } else {
-        // Refresh failed, force logout
-        localStorage.removeItem('user');
-        localStorage.removeItem('token');
-        window.location.href = '/login';
-        return res;
-      }
-    }
-    return res;
+    return await apiCallWithRefresh(url, options);
   }
 
+  // Debug: Test token validity
+
+
   useEffect(() => {
+    
     const fetchProducts = async () => {
       setLoading(true);
-      const res = await fetchWithRefresh('/api/products?page=1&limit=24');
-      if (res.ok) {
-        const data = await res.json();
-        const userId = user && user._id ? user._id : (user && user.id ? user.id : null);
-        // Set 'liked' property for each product
-        const productsWithLiked = (data.products || []).map(p => ({
-          ...p,
-          likes: Array.isArray(p.likes) ? p.likes.length : (typeof p.likes === 'number' ? p.likes : 0),
-          liked: Array.isArray(p.likes) && userId ? p.likes.some(id => id === userId || id._id === userId) : false
-        }));
-        setProducts(productsWithLiked);
-      }
+      
+      try {
+        const res = await fetchWithRefresh('/api/products?page=1&limit=24');
+        
+        if (res.ok) {
+          const data = await res.json();
+          const userId = user && user._id ? user._id : (user && user.id ? user.id : null);
+          
+          // Set 'liked' property for each product
+          const productsWithLiked = (data.products || []).map(p => ({
+            ...p,
+            likes: Array.isArray(p.likes) ? p.likes.length : (typeof p.likes === 'number' ? p.likes : 0),
+            liked: Array.isArray(p.likes) && userId ? p.likes.some(id => id === userId || id._id === userId) : false
+          }));
+          setProducts(productsWithLiked);
+        } else {
+          }
+      } catch (error) {
+        }
+      
       setLoading(false);
     };
 
     const fetchFavoriteCount = async () => {
       try {
         const res = await fetchWithRefresh('/api/products/favorites/count');
+        
         if (res.ok) {
           const data = await res.json();
           setFavoriteCount(data.count || 0);
         }
       } catch (error) {
-        console.error('Error fetching favorite count:', error);
-      }
+        }
     };
 
     fetchProducts();
@@ -196,27 +173,33 @@ const Dashbaord = () => {
 
   const handleLike = async (productId) => {
     setLikeLoading(prev => ({ ...prev, [productId]: true }));
-    const token = localStorage.getItem('token');
-    const res = await fetchWithRefresh(`/api/products/${productId}/like`);
-    if (res.ok) {
-      const data = await res.json();
-      setProducts(prev => prev.map(p =>
-        p._id === productId ? { ...p, likes: data.likes, liked: data.liked } : p
-      ));
+    try {
+      const res = await fetchWithRefresh(`/api/products/${productId}/like`, {
+        method: 'POST'
+      });
       
-      // Update favorite count
-      const currentProduct = products.find(p => p._id === productId);
-      if (currentProduct) {
-        if (currentProduct.liked && !data.liked) {
-          // Product was unliked
-          setFavoriteCount(prev => Math.max(0, prev - 1));
-        } else if (!currentProduct.liked && data.liked) {
-          // Product was liked
-          setFavoriteCount(prev => prev + 1);
+      if (res.ok) {
+        const data = await res.json();
+        setProducts(prev => prev.map(p =>
+          p._id === productId ? { ...p, likes: data.likes, liked: data.liked } : p
+        ));
+        
+        // Update favorite count
+        const currentProduct = products.find(p => p._id === productId);
+        if (currentProduct) {
+          if (currentProduct.liked && !data.liked) {
+            // Product was unliked
+            setFavoriteCount(prev => Math.max(0, prev - 1));
+          } else if (!currentProduct.liked && data.liked) {
+            // Product was liked
+            setFavoriteCount(prev => prev + 1);
+          }
         }
       }
+    } catch (error) {
+      } finally {
+      setLikeLoading(prev => ({ ...prev, [productId]: false }));
     }
-    setLikeLoading(prev => ({ ...prev, [productId]: false }));
   };
 
   const openCommentModal = (product, view = false) => {
@@ -246,13 +229,8 @@ const Dashbaord = () => {
   const handleAddComment = async (e) => {
     e.preventDefault();
     if (!commentText.trim()) return;
-    const token = localStorage.getItem('token');
     const res = await fetchWithRefresh('/api/comments', {
       method: 'POST',
-      headers: {
-        'Authorization': token ? `Bearer ${token}` : '',
-        'Content-Type': 'application/json',
-      },
       body: JSON.stringify({ product: commentModal.product._id, content: commentText })
     });
     if (res.ok) {
@@ -281,13 +259,8 @@ const Dashbaord = () => {
   const handleUpdateComment = async (e) => {
     e.preventDefault();
     if (!editCommentText.trim()) return;
-    const token = localStorage.getItem('token');
     const res = await fetchWithRefresh(`/api/comments/${editingCommentId}`, {
       method: 'PUT',
-      headers: {
-        'Authorization': token ? `Bearer ${token}` : '',
-        'Content-Type': 'application/json',
-      },
       body: JSON.stringify({ content: editCommentText })
     });
     if (res.ok) {
@@ -303,12 +276,8 @@ const Dashbaord = () => {
 
   const confirmDeleteComment = async () => {
     const commentId = deleteConfirm.commentId;
-    const token = localStorage.getItem('token');
     const res = await fetchWithRefresh(`/api/comments/${commentId}`, {
       method: 'DELETE',
-      headers: {
-        'Authorization': token ? `Bearer ${token}` : '',
-      },
     });
     if (res.ok) {
       fetchComments(commentModal.product._id);
@@ -426,9 +395,7 @@ const Dashbaord = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/');
+    logout(navigate);
   };
 
   return (
@@ -507,6 +474,8 @@ const Dashbaord = () => {
                 تسجيل الخروج
               </button>
               
+
+              
               {/* Mobile Menu Button */}
               <button 
                 className="customer-mobile-menu-btn"
@@ -561,7 +530,7 @@ const Dashbaord = () => {
               <div key={product._id || product.id} className="featured-product-card">
                 <div className="product-image-container">
                   <img 
-                    src={product.images && product.images.length > 0 ? product.images[0] : 'https://via.placeholder.com/160x160?text=Product'} 
+                    src={getImageUrl(product.images, 0)} 
                     alt={product.name} 
                     className="product-image" 
                   />
@@ -619,7 +588,7 @@ const Dashbaord = () => {
               <div key={product._id || product.id} className="collection-card">
                 <div className="product-image-container">
                   <img 
-                    src={product.images && product.images.length > 0 ? product.images[0] : 'https://via.placeholder.com/160x160?text=Product'} 
+                    src={getImageUrl(product.images, 0)} 
                     alt={product.name} 
                     className="product-image" 
                   />
@@ -677,7 +646,7 @@ const Dashbaord = () => {
                     <div className="product-image-container">
                       {product.images && product.images.length > 0 ? (
                         <img 
-                          src={product.images[currentIndex]} 
+                          src={getImageUrl(product.images, currentIndex)} 
                           alt={product.name} 
                           className="product-image" 
                         />
@@ -995,7 +964,7 @@ const Dashbaord = () => {
               <div className="product-images-section">
                 {viewProduct.images && viewProduct.images.length > 0 ? (
                   <img
-                    src={viewProduct.images[lightbox.index || 0]}
+                    src={getImageUrl(viewProduct.images, lightbox.index || 0)}
                     alt={viewProduct.name}
                     className="main-product-image"
                     onClick={() => setLightbox({ open: true, images: viewProduct.images, index: lightbox.index || 0 })}
@@ -1008,7 +977,7 @@ const Dashbaord = () => {
                     {viewProduct.images.map((img, idx) => (
                       <img
                         key={idx}
-                        src={img}
+                        src={getImageUrl(viewProduct.images, idx)}
                         alt={`صورة ${idx + 1}`}
                         className={`thumbnail ${lightbox.index === idx ? 'active' : ''}`}
                         onClick={() => setLightbox({ open: true, images: viewProduct.images, index: idx })}

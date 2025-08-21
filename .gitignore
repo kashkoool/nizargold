@@ -10,6 +10,8 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
+env.production
+env.production.template
 
 # Build outputs
 build/
@@ -73,3 +75,27 @@ Thumbs.db
 
 # Security - Admin creation scripts
 server/createOwner.js
+
+# Upload directories
+server/uploads/
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+env.production
+env.production.template
+
+# Build directories
+client/build/
+server/build/
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp

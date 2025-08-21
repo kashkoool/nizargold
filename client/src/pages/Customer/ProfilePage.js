@@ -13,7 +13,8 @@ import {
   Star,
   Crown
 } from 'lucide-react';
-import { apiCall } from '../../utils/api';
+import { apiCall, apiCallWithRefresh } from '../../utils/api';
+import { logout } from '../../utils/auth';
 import './styles/ProfilePage.css';
 
 const ProfilePage = () => {
@@ -53,12 +54,8 @@ const ProfilePage = () => {
   const handleSave = async () => {
     try {
       // Update data on server
-      const res = await apiCall('/api/users/profile', {
+      const res = await apiCallWithRefresh('/api/users/profile', {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
         body: JSON.stringify(editData)
       });
 
@@ -72,8 +69,7 @@ const ProfilePage = () => {
         setUser(updatedUser);
       }
     } catch (error) {
-      console.error('Error updating profile:', error);
-    }
+      }
   };
 
   const handleCancel = () => {
@@ -82,9 +78,7 @@ const ProfilePage = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/');
+    logout(navigate);
   };
 
   const getInitials = (name, nickname) => {

@@ -1,106 +1,216 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 require('dotenv').config();
+
+// Import security middleware
+const {
+  authLimiter,
+  apiLimiter,
+  uploadLimiter,
+  securityHeaders,
+  sanitizeInput,
+  validateFileUpload,
+  validateRequestSize,
+  corsSecurity,
+  mongoSanitization,
+  xssProtection,
+  hppProtection,
+  securityLogger
+} = require('./middleware/security');
 
 const app = express();
 
-// Add security headers
+// ============================================================================
+// SECURITY MIDDLEWARE
+// ============================================================================
+
+// Apply security headers
+app.use(securityHeaders);
+
+// Apply rate limiting
+app.use('/api/users/login', authLimiter);
+app.use('/api/users/register', authLimiter);
+app.use('/api/products', uploadLimiter);
+app.use('/api', apiLimiter);
+
+// Apply security protections
+app.use(mongoSanitization);
+app.use(xssProtection);
+app.use(hppProtection);
+app.use(securityLogger);
+app.use(validateRequestSize);
+app.use(sanitizeInput);
+
+// ============================================================================
+// CORS CONFIGURATION
+// ============================================================================
+
+// CORS configuration
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    const allowedOrigins = [
+      // Development
+      'http://localhost:3000',
+      'http://localhost:3002',
+      
+      // Production
+      process.env.CLIENT_URL,
+      process.env.RAILWAY_STATIC_URL,
+      'https://nizargold.vercel.app'
+    ].filter(Boolean);
+    
+    if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV === 'development') {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'authorization'],
+  exposedHeaders: ['X-Total-Count'],
+  maxAge: 86400 // 24 hours
+};
+
+app.use(cors(corsOptions));
+
+// Apply additional CORS security
+app.use(corsSecurity);
+
+// ============================================================================
+// REQUEST PARSING MIDDLEWARE
+// ============================================================================
+
+// Handle FormData and JSON parsing
 app.use((req, res, next) => {
-  res.setHeader('X-Content-Type-Options', 'nosniff');
-  res.setHeader('X-Frame-Options', 'DENY');
-  res.setHeader('X-XSS-Protection', '1; mode=block');
-  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
-  next();
+  // Skip JSON parsing for multipart/form-data (FormData)
+  if (req.headers['content-type'] && req.headers['content-type'].includes('multipart/form-data')) {
+    return next();
+  }
+  // For other content types, use JSON parsing
+  express.json({ limit: '20mb' })(req, res, next);
 });
 
-// Add debugging information
-console.log('=== BACKEND SERVER STARTING ===');
-console.log('Environment:', process.env.NODE_ENV || 'development');
-console.log('Port:', process.env.PORT || 5001);
-console.log('MongoDB URI:', process.env.MONGO_URI ? 'Set' : 'Not set');
-
-// Configure CORS to allow requests from the React app and mobile devices
-app.use(cors({
-  origin: [
-    'http://localhost:3002', 
-    'http://localhost:3000',
-    'http://192.168.1.100:3002',
-    'http://192.168.1.101:3002',
-    'http://192.168.1.102:3002',
-    'http://192.168.1.103:3002',
-    'http://192.168.1.104:3002',
-    'http://192.168.1.105:3002',
-    'http://10.0.0.100:3002',
-    'http://10.0.0.101:3002',
-    'http://10.0.0.102:3002',
-    'http://10.0.0.103:3002',
-    'http://10.0.0.104:3002',
-    'http://10.0.0.105:3002',
-    // Add Railway domains here
-    process.env.CLIENT_URL,
-    process.env.RAILWAY_STATIC_URL,
-    // Add Vercel domain
-    'https://nizargold.vercel.app'
-  ].filter(Boolean), // Remove undefined values
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
-}));
-
-app.use(express.json({ limit: '20mb' }));
 app.use(express.urlencoded({ limit: '20mb', extended: true }));
+app.use(cookieParser());
+
+// ============================================================================
+// STATIC FILES
+// ============================================================================
+
 app.use('/uploads', express.static('uploads'));
+
+// ============================================================================
+// ROUTES
+// ============================================================================
 
 const routes = require('./routes');
 app.use('/api', routes);
 
+// ============================================================================
+// HEALTH CHECK & MONITORING
+// ============================================================================
+
+// Health check endpoint for deployment platforms
+app.get('/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'ok', 
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development'
+  });
+});
+
+// CORS test endpoint
+app.get('/cors-test', (req, res) => {
+  res.status(200).json({ 
+    message: 'CORS is working!',
+    origin: req.headers.origin,
+    timestamp: new Date().toISOString()
+  });
+});
+
+// ============================================================================
+// ERROR HANDLING
+// ============================================================================
+
+// Global error handler
+app.use((err, req, res, next) => {
+  // Don't expose internal errors in production
+  const errorMessage = process.env.NODE_ENV === 'production' 
+    ? 'Internal server error' 
+    : err.message;
+  
+  res.status(500).json({
+    error: 'Internal server error',
+    message: errorMessage,
+    timestamp: new Date().toISOString()
+  });
+});
+
+// 404 handler for unmatched routes
+app.use((req, res) => {
+  res.status(404).json({ 
+    error: 'Route not found',
+    path: req.originalUrl,
+    timestamp: new Date().toISOString()
+  });
+});
+
+// ============================================================================
+// DATABASE CONNECTION
+// ============================================================================
+
+const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URI, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+      });
+      console.log('✅ MongoDB connected successfully');
+    } catch (error) {
+    process.exit(1);
+  }
+};
+
+// ============================================================================
+// SERVER STARTUP
+// ============================================================================
+
 const PORT = process.env.PORT || 5001;
 
-// MongoDB connection
-mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('MongoDB connected'))
-  .catch(err => console.log(err));
+const startServer = async () => {
+  try {
+    // Connect to database
+    await connectDB();
+    
+    // Start server
+    app.listen(PORT, () => {
+        console.log(`🚀 Server running on port ${PORT}`);
+        console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+        console.log(`📊 Health check: http://localhost:${PORT}/health`);
+      });
+  } catch (error) {
+    process.exit(1);
+  }
+};
 
-// Example route
-app.get('/', (req, res) => {
-  console.log('Backend API endpoint hit:', req.path);
-  res.status(404).send('Not Found');
-});
-
-// Health check endpoint for Railway
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
-});
-
-// Test route for debugging
-app.get('/test', (req, res) => {
-  res.json({ message: 'Backend Server is working!', timestamp: new Date().toISOString() });
-});
-
-// Debug route to check if API routes are loaded
-app.get('/api-debug', (req, res) => {
-  res.json({ 
-    message: 'API routes are accessible',
-    timestamp: new Date().toISOString(),
-    routes: app._router.stack.filter(r => r.route).map(r => Object.keys(r.route.methods)[0] + ' ' + r.route.path)
+// Handle graceful shutdown
+process.on('SIGTERM', () => {
+  mongoose.connection.close(() => {
+    process.exit(0);
   });
 });
 
-// Debug route to check products routes specifically
-app.get('/api/products-debug', (req, res) => {
-  res.json({ 
-    message: 'Products routes are accessible',
-    timestamp: new Date().toISOString(),
-    availableRoutes: [
-      'GET /api/products',
-      'GET /api/products/favorites/user',
-      'GET /api/products/favorites/count',
-      'POST /api/products/:id/like'
-    ]
+process.on('SIGINT', () => {
+  mongoose.connection.close(() => {
+    process.exit(0);
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`=== BACKEND SERVER RUNNING ON PORT ${PORT} ===`);
-});
+// Start the server
+startServer();

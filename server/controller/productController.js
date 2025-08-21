@@ -1,4 +1,5 @@
 const Product = require('../models/Product');
+const base64ImageStorage = require('../utils/base64ImageStorage');
 
 // Helper: Validate stones for diamond
 function validateDiamondStones(stones) {
@@ -22,17 +23,49 @@ function validateDiamondStones(stones) {
 // Create a new product
 exports.createProduct = async (req, res) => {
   try {
-    const images = req.files ? req.files.map(file => `/uploads/${file.filename}`) : [];
+    let images = [];
+    
+    // Save images as base64 in MongoDB if files are provided
+    if (req.files && req.files.length > 0) {
+      try {
+        const uploadedImages = req.files.map(file => base64ImageStorage.saveImage(file));
+        images = uploadedImages;
+      } catch (uploadError) {
+        return res.status(500).json({ message: 'Error saving images' });
+      }
+    }
     const { productType, material, stones } = req.body;
     // Parse arrays if sent as JSON strings (from FormData)
     let ringSizes = req.body.ringSizes;
     let setAccessories = req.body.setAccessories;
+    let sizes = req.body.sizes;
+    let setComponents = req.body.setComponents;
+    let diamonds = req.body.diamonds;
+    
     if (typeof ringSizes === 'string') {
       try { ringSizes = JSON.parse(ringSizes); } catch { ringSizes = []; }
     }
     if (typeof setAccessories === 'string') {
       try { setAccessories = JSON.parse(setAccessories); } catch { setAccessories = []; }
     }
+    if (typeof sizes === 'string') {
+      try { sizes = JSON.parse(sizes); } catch { sizes = []; }
+    }
+    if (typeof setComponents === 'string') {
+      try { setComponents = JSON.parse(setComponents); } catch { setComponents = []; }
+    }
+    if (typeof diamonds === 'string') {
+      try { diamonds = JSON.parse(diamonds); } catch { diamonds = []; }
+    }
+    
+    // Parse images if sent as JSON string (only if no files were uploaded)
+    if (!req.files || req.files.length === 0) {
+      const bodyImages = req.body.images;
+      if (typeof bodyImages === 'string') {
+        try { images = JSON.parse(bodyImages); } catch { images = []; }
+      }
+    }
+    
     // Parse gramPrice and totalPrice if sent as JSON strings
     let gramPrice = req.body.gramPrice;
     let totalPrice = req.body.totalPrice;
@@ -45,16 +78,21 @@ exports.createProduct = async (req, res) => {
     // Validate ringSizes and setAccessories
     const isRing = productType === 'خاتم' || productType === 'محبس';
     const isSetWithRing = productType === 'طقم' && setAccessories && Array.isArray(setAccessories) && (setAccessories.includes('خاتم') || setAccessories.includes('ring'));
-    if ((isRing || isSetWithRing) && (!ringSizes || ringSizes.length === 0)) {
+    
+    // Ensure ringSizes and setAccessories are arrays
+    if (!Array.isArray(ringSizes)) ringSizes = [];
+    if (!Array.isArray(setAccessories)) setAccessories = [];
+    
+    if ((isRing || isSetWithRing) && ringSizes.length === 0) {
       return res.status(400).json({ message: 'ringSizes are required for خاتم أو محبس أو طقم مع خاتم' });
     }
-    if (!(isRing || isSetWithRing) && ringSizes && Array.isArray(ringSizes) && ringSizes.length > 0) {
+    if (!(isRing || isSetWithRing) && ringSizes.length > 0) {
       return res.status(400).json({ message: 'ringSizes only allowed for خاتم أو محبس أو طقم مع خاتم' });
     }
-    if (productType === 'طقم' && (!setAccessories || setAccessories.length === 0)) {
+    if (productType === 'طقم' && setAccessories.length === 0) {
       return res.status(400).json({ message: 'setAccessories are required for طقم' });
     }
-    if (productType !== 'طقم' && setAccessories && Array.isArray(setAccessories) && setAccessories.length > 0) {
+    if (productType !== 'طقم' && setAccessories.length > 0) {
       return res.status(400).json({ message: 'setAccessories only allowed for طقم' });
     }
     // Validate stones for diamond
@@ -76,6 +114,9 @@ exports.createProduct = async (req, res) => {
       stones: stonesArr,
       ringSizes,
       setAccessories,
+      sizes,
+      setComponents,
+      diamonds,
       images,
       owner: req.user._id,
       createdAt,
@@ -97,6 +138,7 @@ exports.getProducts = async (req, res) => {
     if (req.user && req.user.role === 'owner') {
       filter = { owner: req.user._id };
     }
+    
     // Pagination
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 20;
@@ -134,33 +176,85 @@ exports.getProductById = async (req, res) => {
 exports.updateProduct = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
-    if (!product) return res.status(404).json({ message: 'Product not found' });
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+    
     if (!product.owner.equals(req.user._id)) {
       return res.status(403).json({ message: 'Forbidden' });
     }
-    const { productType, ringSizes, setAccessories, material, stones } = req.body;
-    // Parse gramPrice and totalPrice if sent as JSON strings
+    
+
+    const { productType, material, stones } = req.body;
+    
+    // Parse arrays and objects that might be sent as JSON strings from FormData
+    let ringSizes = req.body.ringSizes;
+    let setAccessories = req.body.setAccessories;
     let gramPrice = req.body.gramPrice;
     let totalPrice = req.body.totalPrice;
+    let sizes = req.body.sizes;
+    let setComponents = req.body.setComponents;
+    let diamonds = req.body.diamonds;
+    
+    // Parse ringSizes if sent as JSON string
+    if (typeof ringSizes === 'string') {
+      try { ringSizes = JSON.parse(ringSizes); } catch { ringSizes = []; }
+    }
+    
+    // Parse setAccessories if sent as JSON string
+    if (typeof setAccessories === 'string') {
+      try { setAccessories = JSON.parse(setAccessories); } catch { setAccessories = []; }
+    }
+    
+    // Parse gramPrice if sent as JSON string
     if (typeof gramPrice === 'string') {
       try { gramPrice = JSON.parse(gramPrice); } catch { gramPrice = { usd: 0, syp: 0 }; }
     }
+    
+    // Parse totalPrice if sent as JSON string
     if (typeof totalPrice === 'string') {
       try { totalPrice = JSON.parse(totalPrice); } catch { totalPrice = { usd: 0, syp: 0 }; }
     }
+    
+    // Parse sizes if sent as JSON string
+    if (typeof sizes === 'string') {
+      try { sizes = JSON.parse(sizes); } catch { sizes = []; }
+    }
+    
+    // Parse setComponents if sent as JSON string
+    if (typeof setComponents === 'string') {
+      try { setComponents = JSON.parse(setComponents); } catch { setComponents = []; }
+    }
+    
+    // Parse diamonds if sent as JSON string
+    if (typeof diamonds === 'string') {
+      try { diamonds = JSON.parse(diamonds); } catch { diamonds = []; }
+    }
+    
+    // Parse images if sent as JSON string
+    let bodyImages = req.body.images;
+    if (typeof bodyImages === 'string') {
+      try { bodyImages = JSON.parse(bodyImages); } catch { bodyImages = []; }
+    }
+    
     // Validate ringSizes and setAccessories
     const isRing = productType === 'خاتم' || productType === 'محبس';
     const isSetWithRing = productType === 'طقم' && setAccessories && Array.isArray(setAccessories) && (setAccessories.includes('خاتم') || setAccessories.includes('ring'));
-    if ((isRing || isSetWithRing) && (!ringSizes || ringSizes.length === 0)) {
+    
+    // Ensure ringSizes and setAccessories are arrays
+    if (!Array.isArray(ringSizes)) ringSizes = [];
+    if (!Array.isArray(setAccessories)) setAccessories = [];
+    
+    if ((isRing || isSetWithRing) && ringSizes.length === 0) {
       return res.status(400).json({ message: 'ringSizes are required for خاتم أو محبس أو طقم مع خاتم' });
     }
-    if (!(isRing || isSetWithRing) && ringSizes && Array.isArray(ringSizes) && ringSizes.length > 0) {
+    if (!(isRing || isSetWithRing) && ringSizes.length > 0) {
       return res.status(400).json({ message: 'ringSizes only allowed for خاتم أو محبس أو طقم مع خاتم' });
     }
-    if (productType === 'طقم' && (!setAccessories || setAccessories.length === 0)) {
+    if (productType === 'طقم' && setAccessories.length === 0) {
       return res.status(400).json({ message: 'setAccessories are required for طقم' });
     }
-    if (productType !== 'طقم' && setAccessories && setAccessories.length > 0) {
+    if (productType !== 'طقم' && setAccessories.length > 0) {
       return res.status(400).json({ message: 'setAccessories only allowed for طقم' });
     }
     // Validate stones for diamond
@@ -174,9 +268,46 @@ exports.updateProduct = async (req, res) => {
     }
     // If new images are uploaded, replace the images array
     if (req.files && req.files.length > 0) {
-      product.images = req.files.map(file => `/uploads/${file.filename}`);
+      try {
+        // Delete old images (no action needed for base64 since they're in the database)
+        // The old images will be replaced when we save the product
+        
+        // Save new images as base64
+        const uploadedImages = req.files.map(file => base64ImageStorage.saveImage(file));
+        product.images = uploadedImages;
+      } catch (uploadError) {
+        return res.status(500).json({ message: 'Error saving images' });
+      }
+    } else if (bodyImages && Array.isArray(bodyImages)) {
+      // If no new files but images array is provided, use it
+      product.images = bodyImages;
     }
-    Object.assign(product, req.body, { stones: stonesArr, gramPrice, totalPrice });
+    
+    // Create update object with properly parsed data
+    const updateData = { ...req.body };
+    delete updateData.images; // Remove images from body to avoid overwriting uploaded files
+    
+    // Remove the stringified versions and use the parsed ones
+    delete updateData.stones;
+    delete updateData.gramPrice;
+    delete updateData.totalPrice;
+    delete updateData.ringSizes;
+    delete updateData.setAccessories;
+    delete updateData.sizes;
+    delete updateData.setComponents;
+    delete updateData.diamonds;
+    delete updateData.images;
+    
+    Object.assign(product, updateData, { 
+      stones: stonesArr, 
+      gramPrice, 
+      totalPrice,
+      ringSizes,
+      setAccessories,
+      sizes,
+      setComponents,
+      diamonds
+    });
     await product.save();
     res.json(product);
   } catch (err) {
@@ -192,6 +323,10 @@ exports.deleteProduct = async (req, res) => {
     if (!product.owner.equals(req.user._id)) {
       return res.status(403).json({ message: 'Forbidden' });
     }
+    
+    // Delete images (no action needed for base64 since they're in the database)
+    // The images will be deleted when the product is deleted from the database
+    
     await product.deleteOne();
     res.json({ message: 'Product deleted' });
   } catch (err) {
@@ -203,10 +338,14 @@ exports.deleteProduct = async (req, res) => {
 exports.togglePin = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
-    if (!product) return res.status(404).json({ message: 'Product not found' });
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+    
     if (!product.owner.equals(req.user._id)) {
       return res.status(403).json({ message: 'Forbidden' });
     }
+    
     product.pinned = !product.pinned;
     await product.save();
     res.json({ pinned: product.pinned });
@@ -219,28 +358,23 @@ exports.togglePin = async (req, res) => {
 exports.toggleLike = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
-    if (!product) return res.status(404).json({ message: 'Product not found' });
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+    
     const userId = req.user._id;
     
-    console.log('❤️ Toggling like for product:', req.params.id, 'by user:', userId);
-    console.log('📦 Current product likes:', product.likes.length);
-    
     const liked = product.likes.some(id => id.equals(userId));
-    console.log('❤️ Current liked status:', liked);
     
     if (liked) {
       product.likes = product.likes.filter(id => !id.equals(userId));
-      console.log('❌ Removing like');
     } else {
       product.likes.push(userId);
-      console.log('✅ Adding like');
     }
     
     await product.save();
-    console.log('💾 Updated likes count:', product.likes.length);
     res.json({ likes: product.likes.length, liked: !liked });
   } catch (err) {
-    console.error('💥 Error in toggleLike:', err);
     res.status(500).json({ message: err.message });
   }
 };
@@ -249,15 +383,11 @@ exports.toggleLike = async (req, res) => {
 exports.getFavoriteProducts = async (req, res) => {
   try {
     const userId = req.user._id;
-    console.log('🔍 Getting favorite products for user:', userId);
     
     // Find all products that the user has liked
     const products = await Product.find({
       likes: { $in: [userId] }
     }).sort({ createdAt: -1 });
-
-    console.log('📦 Found products:', products.length);
-    console.log('📦 Products:', products.map(p => ({ id: p._id, name: p.name, likes: p.likes.length })));
 
     // Add liked property to each product
     const productsWithLiked = products.map(product => ({
@@ -266,10 +396,8 @@ exports.getFavoriteProducts = async (req, res) => {
       likes: product.likes.length
     }));
 
-    console.log('✅ Returning products:', productsWithLiked.length);
     res.json({ products: productsWithLiked });
   } catch (err) {
-    console.error('💥 Error in getFavoriteProducts:', err);
     res.status(500).json({ message: err.message });
   }
 };

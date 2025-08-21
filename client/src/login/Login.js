@@ -42,40 +42,58 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    try {
-      const payload = usernameOrEmail.includes('@')
-        ? { email: usernameOrEmail, password }
-        : { username: usernameOrEmail, password };
-      console.log('Sending login request to /api/users/login with payload:', payload);
+          try {
+        const payload = usernameOrEmail.includes('@')
+          ? { email: usernameOrEmail, password }
+          : { username: usernameOrEmail, password };
+      
       const res = await apiCall('/api/users/login', {
         method: 'POST',
         body: JSON.stringify(payload),
-      });
-      console.log('Received response:', res);
-      const data = await res.json();
-      console.log('Parsed response data:', data);
-      if (!res.ok) {
-        setError(data.message || 'فشل تسجيل الدخول');
-        return;
-      }
-      // Check role matches selected type
-      if (data.user.role !== userType) {
-        setError('نوع الحساب غير صحيح لهذا الدخول');
-        return;
-      }
-      // Store token and user info
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
-      // Redirect
+              });
+        
+        const responseText = await res.text();
+        
+        // Try to parse as JSON
+        let data;
+        try {
+          data = JSON.parse(responseText);
+        } catch (parseError) {
+          setError('Server returned invalid response. Please try again.');
+          return;
+        }
+        
+        if (!res.ok) {
+          setError(data.message || 'فشل تسجيل الدخول');
+          return;
+        }
+        
+        // Check role matches selected type
+        if (data.user.role !== userType) {
+          setError('نوع الحساب غير صحيح لهذا الدخول');
+          return;
+        }
+        
+        // Store token and user info
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        
+        // Also store refresh token if provided
+        if (data.refreshToken) {
+          localStorage.setItem('refreshToken', data.refreshToken);
+        }
+        
+
+       
+        // Redirect
       if (data.user.role === 'owner') {
         navigate('/owner/dashboard');
       } else {
         navigate('/customer/dashboard');
       }
-    } catch (err) {
-      console.log('Login error:', err);
-      setError('حدث خطأ أثناء تسجيل الدخول');
-    }
+         } catch (err) {
+       setError('حدث خطأ أثناء تسجيل الدخول');
+     }
   };
 
   return (

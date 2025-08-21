@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Heart, MessageCircle, TrendingUp, Eye, Star, X, BarChart3, Moon, Sun } from 'lucide-react';
-import { apiCall } from '../../utils/api';
+import { apiCall, apiCallWithRefresh } from '../../utils/api';
 import './styles/StatisticsPanel.css';
 
 const StatisticsPanel = ({ onBack }) => {
@@ -18,40 +18,28 @@ const StatisticsPanel = ({ onBack }) => {
   const fetchStatistics = async () => {
     try {
       setLoading(true);
-      const res = await apiCall('/api/statistics/products', {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
+      const res = await apiCallWithRefresh('/api/statistics/products');
       
       if (res.ok) {
         const data = await res.json();
         setStatistics(data);
       }
     } catch (error) {
-      console.error('Error fetching statistics:', error);
-    } finally {
+      } finally {
       setLoading(false);
     }
   };
 
   const fetchProductStatistics = async (productId) => {
     try {
-      const res = await apiCall(`/api/statistics/products/${productId}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
+      const res = await apiCallWithRefresh(`/api/statistics/products/${productId}`);
       
       if (res.ok) {
         const data = await res.json();
         setSelectedProduct(data);
       }
     } catch (error) {
-      console.error('Error fetching product statistics:', error);
-    }
+      }
   };
 
   const getMaterialColor = (material) => {

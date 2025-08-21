@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { DollarSign, RefreshCw, Save, AlertCircle, CheckCircle, X, Calculator, Moon, Sun } from 'lucide-react';
-import { apiCall } from '../../utils/api';
+import { apiCall, apiCallWithRefresh } from '../../utils/api';
 import './styles/MaterialPriceManager.css';
 
 const MaterialPriceManager = ({ onBack }) => {
@@ -30,13 +30,7 @@ const MaterialPriceManager = ({ onBack }) => {
   const fetchMaterialPrices = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('token');
-      const res = await apiCall('/api/material-prices', {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
+      const res = await apiCallWithRefresh('/api/material-prices');
       
       if (res.ok) {
         const prices = await res.json();
@@ -173,21 +167,13 @@ const MaterialPriceManager = ({ onBack }) => {
       }
       
       // Log the request data
-      console.log(`🔄 Updating ${material} price:`, requestBody);
-      
-      const res = await apiCall('/api/material-prices', {
+      const res = await apiCallWithRefresh('/api/material-prices', {
         method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify(requestBody),
       });
 
       if (res.ok) {
         const result = await res.json();
-        console.log(`✅ Updated ${material} price result:`, result);
-        
         // Auto-update products if enabled
         if (autoUpdateProducts) {
           setMessage({ type: 'success', text: `تم تحديث سعر ${material} بنجاح. جاري تحديث المنتجات...` });
@@ -201,11 +187,9 @@ const MaterialPriceManager = ({ onBack }) => {
         await fetchMaterialPrices();
       } else {
         const error = await res.json();
-        console.log(`❌ Error updating ${material} price:`, error);
         setMessage({ type: 'error', text: error.message });
       }
     } catch (err) {
-      console.log(`❌ Exception updating ${material} price:`, err);
       setMessage({ type: 'error', text: 'فشل في تحديث السعر' });
     }
     setLoading(false);
@@ -218,20 +202,13 @@ const MaterialPriceManager = ({ onBack }) => {
       const requestBody = { material };
       
       // Log the request data
-      console.log(`🔄 Updating products for ${material}:`, requestBody);
-      
-      const res = await apiCall('/api/material-prices/update-products', {
+      const res = await apiCallWithRefresh('/api/material-prices/update-products', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify(requestBody),
       });
 
       if (res.ok) {
         const result = await res.json();
-        console.log(`✅ Updated products for ${material} result:`, result);
         setMessage({ 
           type: 'success', 
           text: `تم تحديث أسعار ${result.updatedCount} منتج من ${material} بنجاح` 
@@ -241,11 +218,9 @@ const MaterialPriceManager = ({ onBack }) => {
         await fetchMaterialPrices();
       } else {
         const error = await res.json();
-        console.log(`❌ Error updating products for ${material}:`, error);
         setMessage({ type: 'error', text: error.message });
       }
     } catch (err) {
-      console.log(`❌ Exception updating products for ${material}:`, err);
       setMessage({ type: 'error', text: 'فشل في تحديث أسعار المنتجات' });
     }
     setUpdating(false);

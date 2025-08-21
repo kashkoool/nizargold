@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { apiCall } from '../utils/api';
+import { getImageUrl } from '../utils/imageUtils';
 import './Home.css';
 
 const Home = () => {
@@ -15,8 +16,7 @@ const Home = () => {
         const data = await res.json();
         setProducts(data.products || []);
       } catch (error) {
-        console.error('Error fetching products:', error);
-      } finally {
+        } finally {
         setLoading(false);
       }
     };
@@ -65,10 +65,10 @@ const Home = () => {
                 <div className="product-image-container">
                   {product.images && product.images.length > 0 ? (
                     <img 
-                      src={product.images[0]} 
+                      src={getImageUrl(product.images, 0)} 
                       alt={product.name} 
                       className="product-image"
-                      onClick={() => window.open(product.images[0], '_blank')}
+                      onClick={() => window.open(getImageUrl(product.images, 0), '_blank')}
                     />
                   ) : (
                     <div className="product-image-placeholder">

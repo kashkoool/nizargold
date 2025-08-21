@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Edit, Trash2, Pin, PinOff, Diamond, Star, Eye } from 'lucide-react';
+import { getImageUrl } from '../../utils/imageUtils';
 import './styles/ProductList.css';
 
 const ProductList = ({
@@ -129,7 +130,7 @@ const ProductList = ({
             <div className="product-image-container">
               {product.images && product.images.length > 0 ? (
                 <img
-                  src={product.images[currentIndex]}
+                  src={getImageUrl(product.images, currentIndex)}
                   alt={product.name}
                   className="product-image"
                 />
@@ -220,7 +221,6 @@ const ProductList = ({
                   </button>
                   <button
                     onClick={() => {
-                      console.log('Pin button clicked', product._id || product.id);
                       onTogglePin(product._id || product.id);
                     }}
                     className={`action-button pin ${product.pinned ? 'pinned' : ''}`}

@@ -6,8 +6,6 @@ import './styles/ProductForm.css';
 
 const ProductForm = ({ product, onSubmit, onCancel }) => {
   // Debug: Log the incoming product prop
-  console.log('DEBUG ProductForm received product:', product);
-
   const [formData, setFormData] = useState({
     name: '',
     material: '', // was 'gold', now empty for placeholder
@@ -97,7 +95,6 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
   useEffect(() => {
     if (product) {
       // Debug: Log the product received for editing
-      console.log('DEBUG useEffect setFormData from product:', product);
       setFormData({
         name: product.name || '',
         material: Object.keys(materialMap).find(key => materialMap[key] === product.material) || product.material || 'gold',
@@ -215,8 +212,7 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
       diamonds: formData.diamonds || [],
       createdAt: product && product.createdAt ? product.createdAt : new Date(),
     };
-    // Debug: Log productData and isFormData before submit
-    console.log('DEBUG ProductForm handleSubmit:', { productData, isFormData: formData.images && formData.images.length > 0 });
+
     // If there are images, use FormData
     if (formData.images && formData.images.length > 0) {
       const form = new FormData();
