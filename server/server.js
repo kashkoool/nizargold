@@ -167,11 +167,13 @@ app.use((req, res) => {
 
 const connectDB = async () => {
   try {
+    console.log('🔄 Connecting to MongoDB...');
     await mongoose.connect(process.env.MONGO_URI, {
         
       });
       console.log('✅ MongoDB connected successfully');
     } catch (error) {
+    console.error('❌ MongoDB connection failed:', error.message);
     process.exit(1);
   }
 };
@@ -184,6 +186,11 @@ const PORT = process.env.PORT || 5001;
 
 const startServer = async () => {
   try {
+    console.log('🔄 Starting server initialization...');
+    console.log(`📊 Port: ${PORT}`);
+    console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`🔗 MongoDB URI: ${process.env.MONGO_URI ? 'Set' : 'Not set'}`);
+    
     // Connect to database
     await connectDB();
     
@@ -192,8 +199,10 @@ const startServer = async () => {
         console.log(`🚀 Server running on port ${PORT}`);
         console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
         console.log(`📊 Health check: http://localhost:${PORT}/health`);
+        console.log(`✅ Server ready to accept requests`);
       });
   } catch (error) {
+    console.error('❌ Server startup failed:', error);
     process.exit(1);
   }
 };
