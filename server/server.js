@@ -61,7 +61,9 @@ const corsOptions = {
       // Production
       process.env.CLIENT_URL,
       process.env.RAILWAY_STATIC_URL,
-      'https://nizargold.vercel.app'
+      'https://nizargold.vercel.app',
+      'https://nizargold-kashkoools-projects.vercel.app',
+      'https://nizargold-okm1u5dc6-kashkoools-projects.vercel.app'
     ].filter(Boolean);
     
     if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV === 'development') {
