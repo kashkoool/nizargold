@@ -123,7 +123,17 @@ app.get('/health', (req, res) => {
   res.status(200).json({ 
     status: 'ok', 
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development'
+    environment: process.env.NODE_ENV || 'development',
+    port: process.env.PORT || 5001,
+    mongoUri: process.env.MONGO_URI ? 'Set' : 'Not set'
+  });
+});
+
+// Simple test endpoint (no database required)
+app.get('/test', (req, res) => {
+  res.status(200).json({ 
+    message: 'Server is running!',
+    timestamp: new Date().toISOString()
   });
 });
 
@@ -193,16 +203,29 @@ const startServer = async () => {
     console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
     console.log(`🔗 MongoDB URI: ${process.env.MONGO_URI ? 'Set' : 'Not set'}`);
     
+    // Check if MongoDB URI is set
+    if (!process.env.MONGO_URI) {
+      console.error('❌ MONGO_URI environment variable is not set!');
+      process.exit(1);
+    }
+    
     // Connect to database
     await connectDB();
     
     // Start server
-    app.listen(PORT, () => {
+    const server = app.listen(PORT, () => {
         console.log(`🚀 Server running on port ${PORT}`);
         console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
         console.log(`📊 Health check: http://localhost:${PORT}/health`);
         console.log(`✅ Server ready to accept requests`);
       });
+      
+    // Handle server errors
+    server.on('error', (error) => {
+      console.error('❌ Server error:', error);
+      process.exit(1);
+    });
+    
   } catch (error) {
     console.error('❌ Server startup failed:', error);
     process.exit(1);
