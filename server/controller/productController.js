@@ -28,8 +28,11 @@ exports.createProduct = async (req, res) => {
     // Save images as base64 in MongoDB if files are provided
     if (req.files && req.files.length > 0) {
       try {
-        const uploadedImages = req.files.map(file => base64ImageStorage.saveImage(file));
-        images = uploadedImages;
+        // Convert uploaded files to base64 (already done in middleware)
+        images = req.files.map(file => ({
+          url: file.url,
+          public_id: file.public_id
+        }));
       } catch (uploadError) {
         return res.status(500).json({ message: 'Error saving images' });
       }
@@ -269,11 +272,11 @@ exports.updateProduct = async (req, res) => {
     // If new images are uploaded, replace the images array
     if (req.files && req.files.length > 0) {
       try {
-        // Delete old images (no action needed for base64 since they're in the database)
-        // The old images will be replaced when we save the product
-        
-        // Save new images as base64
-        const uploadedImages = req.files.map(file => base64ImageStorage.saveImage(file));
+        // Convert uploaded files to base64 (already done in middleware)
+        const uploadedImages = req.files.map(file => ({
+          url: file.url,
+          public_id: file.public_id
+        }));
         product.images = uploadedImages;
       } catch (uploadError) {
         return res.status(500).json({ message: 'Error saving images' });

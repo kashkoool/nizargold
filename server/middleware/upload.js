@@ -6,18 +6,11 @@ const { validateFileUpload } = require('./security');
  * File Upload Middleware Configuration
  * 
  * Handles multipart/form-data file uploads for product images
+ * Uses memory storage for base64 conversion
  */
 
-// Configure storage engine
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, '../uploads/'));
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + '-' + file.originalname);
-  }
-});
+// Configure memory storage for base64 conversion
+const storage = multer.memoryStorage();
 
 // File type filter - images only
 const fileFilter = (req, file, cb) => {
@@ -49,6 +42,16 @@ const uploadWithDebug = (fieldName, maxCount) => {
       if (err) {
         return res.status(400).json({ 
           message: err.message 
+        });
+      }
+      
+      // Convert uploaded files to base64
+      if (req.files && req.files.length > 0) {
+        req.files.forEach(file => {
+          const base64Data = file.buffer.toString('base64');
+          const mimeType = file.mimetype;
+          file.url = `data:${mimeType};base64,${base64Data}`;
+          file.public_id = null;
         });
       }
       
