@@ -4,7 +4,7 @@ const getApiUrl = () => {
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
       return 'http://localhost:5001';
     }
-    return process.env.REACT_APP_API_URL || 'https://nizargold-production.up.railway.app';
+    return 'https://nizargold-production.up.railway.app';
   }
   // In development, use localhost:5001
   return 'http://localhost:5001';
