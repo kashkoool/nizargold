@@ -59,7 +59,7 @@ const WelcomePage = () => {
             <span className="title-line">بالتعاون مع</span>
             <span className="evanox">EVANOX</span>
             <span className="title-line">نضع بين أيديكم متجرنا الفاخر</span>
-            <span className="title-line">أهلاً بكم في مجوهرات نزار</span>
+            <span className="title-line">أهلاً بكم في EvaNox</span>
           </h1>
           
           <div className="welcome-subtitle">

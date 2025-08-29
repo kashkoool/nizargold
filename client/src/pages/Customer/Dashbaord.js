@@ -406,7 +406,7 @@ const Dashbaord = () => {
           {/* Right Side - Brand Name Only */}
           <div className="navbar-right">
             <div className="customer-brand">
-              <span className="brand-text">مجوهرات نزار</span>
+              <span className="brand-text">EvaNox</span>
             </div>
           </div>
           
@@ -496,11 +496,11 @@ const Dashbaord = () => {
       <section className="hero-section">
         <div className="hero-content">
           <div className="hero-images">
-            <img src="https://i.imgur.com/1Q9Z1Zm.jpg" alt="مجوهرات 1" className="hero-image" />
-            <img src="https://i.imgur.com/2nCt3Sbl.jpg" alt="مجوهرات 2" className="hero-image" />
+            <img src="/images/photo_2025-08-29_23-30-35.jpg" alt="EvaNox Jewelry 1" className="hero-image" />
+            <img src="/images/photo_2025-08-29_23-30-40.jpg" alt="EvaNox Jewelry 2" className="hero-image" />
           </div>
           <div className="hero-text">
-            <h1 className="hero-title">مجوهرات نزار الفاخرة</h1>
+            <h1 className="hero-title">EvaNox</h1>
             <p className="hero-subtitle">اكتشف مجموعتنا المميزة من المجوهرات الذهبية والماسية</p>
             <button className="hero-cta-btn" onClick={openContactModal}>تواصل معنا</button>
           </div>
@@ -802,7 +802,7 @@ const Dashbaord = () => {
         </div>
         <div className="footer-bottom">
           <div className="footer-copyright">
-            <span className="copyright-text">جميع الحقوق محفوظة لدى مجوهرات نزار © 2025</span>
+            <span className="copyright-text">جميع الحقوق محفوظة لدى EvaNox © 2025</span>
             <div className="footer-decoration">
               <span className="decoration-dot">✦</span>
               <span className="decoration-dot">✦</span>

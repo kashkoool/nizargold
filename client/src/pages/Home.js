@@ -34,7 +34,7 @@ const Home = () => {
       <div className="home-header">
         <div className="home-header-content">
           <div>
-            <h1 className="home-title">متجر نزار للمجوهرات</h1>
+            <h1 className="home-title">EvaNox</h1>
             <p className="home-subtitle">مجموعة فاخرة من المجوهرات الذهبية والماسية</p>
           </div>
           <div className="home-nav-buttons">
