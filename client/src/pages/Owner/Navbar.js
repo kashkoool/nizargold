@@ -142,7 +142,7 @@ const Navbar = ({ onAddProduct }) => {
       <div className="navbar-container">
         {/* Logo */}
         <div className="navbar-brand">
-          مجوهرات نزار
+          EvaNox
         </div>
         
         {/* Main nav */}
