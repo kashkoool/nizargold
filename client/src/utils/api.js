@@ -1,10 +1,8 @@
 // API utility for handling backend URL configuration
 const getApiUrl = () => {
   if (process.env.NODE_ENV === 'production') {
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-      return 'http://localhost:5001';
-    }
-    return 'https://nizargold-production.up.railway.app';
+    // In production (Vercel), use same-origin so /api routes are proxied by vercel.json
+    return '';
   }
   // In development, use localhost:5001
   return 'http://localhost:5001';

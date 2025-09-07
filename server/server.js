@@ -23,6 +23,58 @@ const {
 const app = express();
 
 // ============================================================================
+// CORS CONFIGURATION (MUST BE FIRST)
+// ============================================================================
+
+// CORS configuration - MUST be applied before other middleware
+const corsOptions = {
+  origin: function (origin, callback) {
+    // In development, allow all origins
+    if (process.env.NODE_ENV !== 'production') {
+      return callback(null, true);
+    }
+    
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    const allowedOrigins = [
+      // Development
+      'http://localhost:3000',
+      'http://localhost:3002',
+      'http://localhost:3001',
+      
+      // Production
+      process.env.CLIENT_URL,
+      process.env.RAILWAY_STATIC_URL,
+      'https://nizargold.vercel.app',
+      'https://nizargold-kashkoools-projects.vercel.app',
+      'https://nizargold-okm1u5dc6-kashkoools-projects.vercel.app'
+    ].filter(Boolean);
+
+    // Allow dynamic Vercel preview URLs for this project (e.g.,
+    // https://nizargold-<hash>-kashkoools-projects.vercel.app)
+    const vercelPreviewRegex = /^https:\/\/nizargold-.*\.vercel\.app$/i;
+
+    if (allowedOrigins.includes(origin) || vercelPreviewRegex.test(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'authorization'],
+  exposedHeaders: ['X-Total-Count'],
+  maxAge: 86400 // 24 hours
+};
+
+// Apply CORS FIRST - before any other middleware
+app.use(cors(corsOptions));
+
+// Handle preflight requests explicitly
+app.options('*', cors(corsOptions));
+
+// ============================================================================
 // SECURITY MIDDLEWARE
 // ============================================================================
 
@@ -32,7 +84,7 @@ app.use(securityHeaders);
 // Apply rate limiting
 app.use('/api/users/login', authLimiter);
 app.use('/api/users/register', authLimiter);
-app.use('/api/products', uploadLimiter);
+// Removed uploadLimiter from /api/products to prevent double rate limiting
 app.use('/api', apiLimiter);
 
 // Apply security protections
@@ -42,44 +94,6 @@ app.use(hppProtection);
 app.use(securityLogger);
 app.use(validateRequestSize);
 app.use(sanitizeInput);
-
-// ============================================================================
-// CORS CONFIGURATION
-// ============================================================================
-
-// CORS configuration
-const corsOptions = {
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    
-    const allowedOrigins = [
-      // Development
-      'http://localhost:3000',
-      'http://localhost:3002',
-      
-      // Production
-      process.env.CLIENT_URL,
-      process.env.RAILWAY_STATIC_URL,
-      'https://nizargold.vercel.app',
-      'https://nizargold-kashkoools-projects.vercel.app',
-      'https://nizargold-okm1u5dc6-kashkoools-projects.vercel.app'
-    ].filter(Boolean);
-    
-    if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV === 'development') {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'authorization'],
-  exposedHeaders: ['X-Total-Count'],
-  maxAge: 86400 // 24 hours
-};
-
-app.use(cors(corsOptions));
 
 // Apply additional CORS security
 app.use(corsSecurity);
@@ -96,6 +110,19 @@ app.use((req, res, next) => {
   }
   // For other content types, use JSON parsing
   express.json({ limit: '20mb' })(req, res, next);
+});
+
+// ============================================================================
+// HEALTH CHECK ENDPOINT
+// ============================================================================
+
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'OK',
+    message: 'Server is running',
+    timestamp: new Date().toISOString(),
+    cors: 'enabled'
+  });
 });
 
 app.use(express.urlencoded({ limit: '20mb', extended: true }));

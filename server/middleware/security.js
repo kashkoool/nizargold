@@ -26,7 +26,7 @@ const authLimiter = rateLimit({
 // Rate limiting for general API endpoints
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
+  max: process.env.NODE_ENV === 'production' ? 500 : 5000, // Much more lenient in development
   message: {
     error: 'Too many requests',
     message: 'Please try again later'
