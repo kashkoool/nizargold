@@ -4,9 +4,9 @@ import { apiCall, apiCallWithRefresh } from '../../utils/api';
 import './styles/MaterialPriceManager.css';
 
 const MaterialPriceManager = ({ onBack }) => {
-  const [materialPrices, setMaterialPrices] = useState({
-    ذهب: { 
-      usd: 0, 
+  const defaultMaterialPrices = {
+    ذهب: {
+      usd: 0,
       syp: 0,
       goldKaratPrices: {
         '18': { usd: 0, syp: 0 },
@@ -16,7 +16,9 @@ const MaterialPriceManager = ({ onBack }) => {
     },
     فضة: { usd: 0, syp: 0 },
     ألماس: { usd: 0, syp: 0 }
-  });
+  };
+
+  const [materialPrices, setMaterialPrices] = useState(defaultMaterialPrices);
   const [loading, setLoading] = useState(false);
   const [updating, setUpdating] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
@@ -34,10 +36,22 @@ const MaterialPriceManager = ({ onBack }) => {
       
       if (res.ok) {
         const prices = await res.json();
+
+        // Normalize material names from API to Arabic keys used in UI
+        const normalizeMaterialName = (name) => {
+          if (!name) return '';
+          const lower = name.toString().toLowerCase();
+          if (lower === 'gold' || name === 'ذهب') return 'ذهب';
+          if (lower === 'silver' || name === 'فضة') return 'فضة';
+          if (lower === 'diamond' || name === 'ألماس') return 'ألماس';
+          return name;
+        };
+
         const formattedPrices = {};
         prices.forEach(price => {
-          if (price.material === 'ذهب') {
-            formattedPrices[price.material] = {
+          const key = normalizeMaterialName(price.material);
+          if (key === 'ذهب') {
+            formattedPrices[key] = {
               usd: price.pricePerGram?.usd || 0,
               syp: price.pricePerGram?.syp || 0,
               goldKaratPrices: price.goldKaratPrices || {
@@ -46,11 +60,32 @@ const MaterialPriceManager = ({ onBack }) => {
                 '24': { usd: 0, syp: 0 }
               }
             };
-          } else {
-            formattedPrices[price.material] = price.pricePerGram || { usd: 0, syp: 0 };
+          } else if (key) {
+            formattedPrices[key] = price.pricePerGram || { usd: 0, syp: 0 };
           }
         });
-        setMaterialPrices(formattedPrices);
+
+        // Deep-merge with defaults to ensure keys always exist (prevents undefined access)
+        const safeMerged = {
+          'ذهب': {
+            usd: (formattedPrices['ذهب'] && formattedPrices['ذهب'].usd) ?? defaultMaterialPrices['ذهب'].usd,
+            syp: (formattedPrices['ذهب'] && formattedPrices['ذهب'].syp) ?? defaultMaterialPrices['ذهب'].syp,
+            goldKaratPrices: {
+              ...defaultMaterialPrices['ذهب'].goldKaratPrices,
+              ...(formattedPrices['ذهب'] && formattedPrices['ذهب'].goldKaratPrices ? formattedPrices['ذهب'].goldKaratPrices : {})
+            }
+          },
+          'فضة': {
+            usd: (formattedPrices['فضة'] && formattedPrices['فضة'].usd) ?? defaultMaterialPrices['فضة'].usd,
+            syp: (formattedPrices['فضة'] && formattedPrices['فضة'].syp) ?? defaultMaterialPrices['فضة'].syp
+          },
+          'ألماس': {
+            usd: (formattedPrices['ألماس'] && formattedPrices['ألماس'].usd) ?? defaultMaterialPrices['ألماس'].usd,
+            syp: (formattedPrices['ألماس'] && formattedPrices['ألماس'].syp) ?? defaultMaterialPrices['ألماس'].syp
+          }
+        };
+
+        setMaterialPrices(safeMerged);
       }
     } catch (err) {
       setMessage({ type: 'error', text: 'فشل في تحميل أسعار المواد' });
@@ -120,8 +155,8 @@ const MaterialPriceManager = ({ onBack }) => {
     
     if (material === 'ذهب') {
       // للذهب، نحدث عيار 21 ونحسب العيارات الأخرى تلقائياً
-      const newKarat21USD = currency === 'usd' ? numericValue : materialPrices[material].goldKaratPrices['21'].usd;
-      const newKarat21SYP = currency === 'syp' ? numericValue : materialPrices[material].goldKaratPrices['21'].syp;
+      const newKarat21USD = currency === 'usd' ? numericValue : materialPrices[material]?.goldKaratPrices?.['21']?.usd || 0;
+      const newKarat21SYP = currency === 'syp' ? numericValue : materialPrices[material]?.goldKaratPrices?.['21']?.syp || 0;
       
       // حساب أسعار العيارات الأخرى
       const calculatedPrices = calculateOtherKaratPrices(newKarat21USD, newKarat21SYP);
@@ -152,7 +187,7 @@ const MaterialPriceManager = ({ onBack }) => {
       
       if (material === 'ذهب') {
         // للذهب، نرسل عيار 21 فقط
-        const karat21Price = materialPrices[material].goldKaratPrices['21'];
+        const karat21Price = materialPrices[material]?.goldKaratPrices?.['21'] || { usd: 0, syp: 0 };
         requestBody = {
           material,
           karat: '21',
@@ -337,7 +372,7 @@ const MaterialPriceManager = ({ onBack }) => {
                   </label>
                   <input
                     type="text"
-                    value={formatNumber(materialPrices[material.name].goldKaratPrices['21']?.usd || 0)}
+                    value={formatNumber(materialPrices[material.name]?.goldKaratPrices?.['21']?.usd || 0)}
                     onChange={(e) => handlePriceChange(material.name, 'usd', e.target.value)}
                     className="material-input"
                     placeholder="0.00"
@@ -351,7 +386,7 @@ const MaterialPriceManager = ({ onBack }) => {
                   </label>
                   <input
                     type="text"
-                    value={formatNumber(materialPrices[material.name].goldKaratPrices['21']?.syp || 0)}
+                    value={formatNumber(materialPrices[material.name]?.goldKaratPrices?.['21']?.syp || 0)}
                     onChange={(e) => handlePriceChange(material.name, 'syp', e.target.value)}
                     className="material-input"
                     placeholder="0.00"
@@ -371,8 +406,8 @@ const MaterialPriceManager = ({ onBack }) => {
                           {karat !== '21' && <span className="mr-1"> (محسوب تلقائياً)</span>}
                         </div>
                         <div className="karat-price-values">
-                          <div>USD: {formatNumber(materialPrices[material.name].goldKaratPrices[karat]?.usd || 0)}</div>
-                          <div>SYP: {formatNumber(materialPrices[material.name].goldKaratPrices[karat]?.syp || 0)}</div>
+                          <div>USD: {formatNumber(materialPrices[material.name]?.goldKaratPrices?.[karat]?.usd || 0)}</div>
+                          <div>SYP: {formatNumber(materialPrices[material.name]?.goldKaratPrices?.[karat]?.syp || 0)}</div>
                         </div>
                       </div>
                     ))}
